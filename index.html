@@ -302,6 +302,19 @@ main,#main{min-width:0}
 @media (max-width:1180px){.layout,body.wide .layout{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left))}}
 @media (max-width:1099px){.scn,.actions{height:auto;min-height:46px;padding:4px 6px;flex-wrap:wrap;border-radius:23px}.actions{gap:4px}}
 @media (max-width:560px){.scn,.actions{border-radius:18px;width:100%;box-sizing:border-box}.scn{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:4px}.scn select{grid-column:2/5}.scn label{grid-row:1}.scn .btn{grid-row:2;width:100%}.scn .btn:nth-of-type(1){grid-column:2}.actions{display:grid;grid-template-columns:1fr 1fr;padding:6px}}
+/* ---- no cut-off text (29 Oct 2026) ---- */
+.tag{font-size:12px;line-height:1.3;white-space:normal}
+.iw{flex-wrap:wrap;overflow:visible}.iw input{flex:1 1 7em;min-width:7em}.iw .suf{white-space:normal;flex:0 1 auto;min-width:0;padding:4px 10px;line-height:1.25}
+.nav-row{flex-wrap:wrap;gap:8px}.nav-row .btn{white-space:normal;height:auto;min-height:47px;padding:8px 14px;max-width:100%;text-align:center}
+.btn{white-space:normal}
+@media (max-width:1180px){
+  #steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));overflow:visible;scroll-snap-type:none}
+  #steps>*,.step{white-space:normal;flex:initial;min-width:0;text-align:left}
+  #summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));overflow:visible;gap:10px 16px}
+  #summary .metric{min-width:0}#summary .metric span,#summary .metric b{white-space:normal;overflow-wrap:anywhere}#summary .metric span{font-size:13px}
+}
+@media (max-width:420px){#steps{grid-template-columns:1fr 1fr}#summary{grid-template-columns:1fr 1fr}}
+@media (max-width:1180px){.top{position:relative!important;top:auto}#summary{position:static!important}}
 </style>
 </head>
 <body>
@@ -730,7 +743,7 @@ var FIELDS = [
   { key: 'loanAmount', step: 'financing', group: 'Loan', label: 'Loan amount', unit: 'juta', min: 0, show: function (I) { return I.loanMode === 'amount'; }, help: 'Total loan facility, drawn in step with construction spending.' },
   { key: 'interestRate', step: 'financing', group: 'Loan', label: 'Interest rate per year', unit: 'pct', min: 0, max: 40, help: 'The bank\u2019s annual interest rate.', warn: function (v) { return v > 15 ? 'High for a rupiah investment loan.' : v > 0 && v < 5 ? 'Low for a rupiah loan.' : ''; } },
   { key: 'idcMode', step: 'financing', group: 'Loan', label: 'Interest during construction is', unit: 'select', adv: true, options: [['capitalise', 'Added to the loan'], ['pay', 'Paid in cash by you']], help: 'Before opening there is no income, so interest is either added to the loan balance (capitalised) or paid from your own money.' },
-  { key: 'repayType', step: 'financing', group: 'Repayment', label: 'Repayment type', unit: 'select', options: [['annuity', 'Equal instalments (principal and interest)'], ['straight', 'Equal principal each year'], ['custom', 'My own principal amounts by year']], help: 'Equal instalments keep the yearly payment the same. Equal principal pays more early on. Custom lets you type the principal for each year.' },
+  { key: 'repayType', step: 'financing', group: 'Repayment', label: 'Repayment type', unit: 'select', options: [['annuity', 'Equal yearly instalments'], ['straight', 'Equal principal each year'], ['custom', 'My own principal amounts by year']], help: 'Equal instalments keep the yearly payment the same. Equal principal pays more early on. Custom lets you type the principal for each year.' },
   { key: 'graceYears', step: 'financing', group: 'Repayment', label: 'Interest-only years after opening', unit: 'years', min: 0, max: 30, dec: 0, show: function (I) { return I.repayType !== 'custom'; }, help: 'A grace period after opening when you pay interest but no principal, while the hotel ramps up.' },
   { key: 'tenorYears', step: 'financing', group: 'Repayment', label: 'Repayment period after the interest-only years', unit: 'years', min: 1, max: 40, dec: 0, show: function (I) { return I.repayType !== 'custom'; }, help: 'Years over which the principal is repaid. Anything still owed when the hotel is sold is repaid from the sale.' },
   { key: 'customPrincipal', step: 'financing', group: 'Repayment', label: 'Principal repaid by year', unit: 'grid-prin', show: function (I) { return I.repayType === 'custom'; }, help: 'Principal to repay in each year after opening. Anything still owed when the hotel is sold is repaid from the sale.' },
