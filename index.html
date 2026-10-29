@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Hotel ROI">
+<title>Hotel return on investment calculator</title>
+<style>:root{--bg:#F6F5F1;--card:#FFFFFF;--ink:#1D232B;--mut:#6B7280;--line:#E4E2DC;--acc:#2F6B5E;--acc2:#E8EFEA;--bad:#B4483A;--warn:#9A6A12;--good:#2F6B5E;--ex:#8A5A00;--exbg:#FFF3D6}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:20;background:#FFFFFFF2;backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 20px 8px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}.link.sm{font-size:12px}.statusbar .units{margin-left:auto}
+.brand{display:flex;flex-direction:column;min-width:0}.brand small{color:var(--mut);font-size:12px}.brand b{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.brand .pn{display:flex;align-items:center;gap:6px}
+.scn{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}.scn label{font-size:12px;color:var(--mut)}
+.scn select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;width:auto;max-width:250px}
+.actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 12px;cursor:pointer;white-space:nowrap}.btn:hover{border-color:#C9C6BE}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#fff}.btn.primary:hover{background:#255A4F}
+.btn.ghost{background:#fff}.btn.sm{padding:4px 9px;font-size:13px;margin-left:4px}.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}.danger-t{color:var(--bad)}
+.btn.full{width:100%;margin-top:12px}.btn.icon{padding:5px 9px;font-size:13px}
+.link{background:none;border:0;color:var(--acc);cursor:pointer;padding:0;text-decoration:underline;font-size:inherit}
+.adv{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--mut);cursor:pointer;white-space:nowrap}
+.statusbar{font-size:12px;color:var(--mut);display:flex;gap:10px;align-items:center;width:100%}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}.dot.ok{background:var(--acc)}.dot.bad{background:var(--bad)}
+.nudge{color:var(--warn);margin-left:10px}
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr) 320px;gap:22px;padding:20px;max-width:1500px;margin:0 auto}
+body.wide .layout{grid-template-columns:230px minmax(0,1fr)}.layout>*{min-width:0}body.wide #summary{display:none}
+.side{position:sticky;top:var(--toph,80px);align-self:start}#steps{display:flex;flex-direction:column;gap:4px}.side .adv{margin:16px 10px 4px}.side-note{font-size:11.5px;color:var(--mut);margin:0 10px}
+.step{display:flex;align-items:center;gap:10px;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:10px;cursor:pointer;color:#3A414B}
+.step:hover{background:#ECEAE4}.step.active{background:#fff;box-shadow:0 1px 2px #0000000F;color:var(--ink);font-weight:600}
+.step .num{width:24px;height:24px;border-radius:50%;background:#E6E3DC;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+.step.active .num{background:var(--acc);color:#fff}
+.step-head h1{font-size:26px;margin:2px 0 4px;letter-spacing:-.01em}.step-head p{margin:0 0 16px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.card h2{font-size:16px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
+.field{min-width:0}.field.wide{grid-column:span 2}.field.full{grid-column:1/-1}
+.lab{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px}.lab label{font-size:13.5px;font-weight:500}
+.help-btn{width:18px;height:18px;border-radius:50%;border:1px solid #C9C6BE;background:#fff;color:var(--mut);font-size:11px;font-weight:700;line-height:1;cursor:pointer;padding:0;font-family:Georgia,serif;font-style:italic;flex:none}
+.help{font-size:13px;color:#4B5360;background:#F3F2EE;border-radius:8px;padding:8px 10px;margin:0 0 6px}
+.badge{font-size:11px;border-radius:999px;padding:2px 8px;border:0;cursor:pointer;line-height:1.5}
+.badge.ex{background:var(--exbg);color:var(--ex)}.badge.old{background:#E6EEF8;color:#2C5282}.badge:hover{filter:brightness(.96)}
+.iw{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;background:#FBFBF9;overflow:hidden}
+.iw:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px #2F6B5E22;background:#fff}
+.iw input{flex:1;min-width:0;border:0;background:transparent;padding:9px 10px;font-variant-numeric:tabular-nums;outline:none;text-align:right}
+.iw .pre{padding-left:10px;color:var(--mut);font-size:13px}.iw .suf{padding:0 10px;color:var(--mut);font-size:13px;white-space:nowrap}
+select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#FBFBF9}
+.check .chk{display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px;cursor:pointer}.check{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.check .help,.check .field-note{flex-basis:100%}
+.check input{width:18px;height:18px;accent-color:var(--acc)}
+.field-note{font-size:12.5px;color:#5A4A1A;background:#FBF6E9;border-left:3px solid #E2C27A;padding:7px 10px;border-radius:6px;margin:4px 0 0}
+.warn{color:var(--warn);font-size:12.5px;margin:4px 0 0;min-height:0}.warn:empty{display:none}
+.ygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.gc label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}.gc .iw input::placeholder{color:#B2B0A8}
+.hint{font-size:12.5px;color:var(--mut);margin:8px 0 0}
+details.override summary{cursor:pointer;color:var(--acc);margin-bottom:10px}
+.note-box{background:var(--exbg);color:#5B4300;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:14px}
+.info-line{background:var(--acc2);color:#24443C;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13.5px}
+.live{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px 18px;margin:0}
+.kv div{display:flex;flex-direction:column}.kv dt{font-size:12px;color:var(--mut)}.kv dd{margin:0;font-variant-numeric:tabular-nums}
+.mut{color:var(--mut);font-size:12.5px}.bad{color:var(--bad)!important}.good{color:var(--good)}
+.nav-row{display:flex;justify-content:space-between;margin:6px 0 30px}
+#summary{position:sticky;top:var(--toph,80px);align-self:start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;max-height:calc(100vh - 110px);overflow:auto}
+.sum-head{display:flex;flex-direction:column;margin-bottom:10px}.sum-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}.sum-scn{font-weight:600;font-size:14px}
+.metric{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-top:1px solid #F0EEE9}
+.metric span{font-size:13px;color:#3A414B}.metric small{color:var(--mut);font-size:11.5px}.metric b{font-variant-numeric:tabular-nums;font-size:15px;white-space:nowrap;text-align:right}
+.metric.big b{font-size:26px;letter-spacing:-.01em}.metric.big{border-top:0}
+.sum-sep{height:6px}
+.warns{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:6px}
+.warns li{font-size:12.5px;padding:7px 10px;border-radius:8px;background:#FBF6E9;color:#6B4E0F}.warns li.bad{background:#FBEDEA;color:var(--bad)}.warns li.info{background:#EEF2F5;color:#3D4E5E}
+.warns.wide{margin:0 0 16px}
+.ex-count{margin-top:12px;font-size:12.5px;background:var(--exbg);color:#6B4E00;border-radius:8px;padding:8px 10px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.rcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.rt{font-size:12.5px;color:var(--mut)}.rv{font-size:22px;font-weight:600;margin:4px 0;font-variant-numeric:tabular-nums;letter-spacing:-.01em}.rs{font-size:12px;color:var(--mut)}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}.chart-card.full{grid-column:1/-1}.chart-card h3{margin:0 0 8px;font-size:15px}
+svg.chart{width:100%;height:auto;display:block}
+svg .grid{stroke:#EEECE6}svg .zero{stroke:#9CA3AF}svg .ax{fill:#8A8F98;font-size:11px}svg .unit{font-size:10px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:#4B5360;margin-top:6px}.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend i.ln{width:16px;height:0;border-top:2.5px solid;border-radius:0;vertical-align:3px}.legend i.ln.dash{border-top-style:dashed}
+.tbl-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+.tabs{display:flex;gap:4px;margin:4px 0 10px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px}.tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tbl-wrap{overflow-x:auto}
+table.yt{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.yt th{font-weight:600;font-size:12px;color:#4B5360;text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:bottom}
+.yt td{text-align:right;padding:7px 8px;border-bottom:1px solid #F1EFEA;white-space:nowrap}.yt th:first-child,.yt td:first-child{text-align:left}
+.yt td.b{font-weight:600}.yt tbody tr:hover{background:#FAFAF7}
+.cmp td,.cmp th{text-align:right}.cmp td:first-child{white-space:normal;color:#3A414B}
+.tag{font-size:10.5px;background:#EEF2F0;color:#3E5C54;border-radius:999px;padding:1px 6px;font-weight:500}
+details.how summary{cursor:pointer;font-weight:600}details.how li{margin:6px 0;font-size:13.5px;color:#3A414B}
+#modal{position:fixed;inset:0;background:#1D232B66;display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}#modal[hidden]{display:none}
+.mbox{background:#fff;border-radius:16px;padding:20px;width:min(560px,100%);max-height:85vh;overflow:auto;box-shadow:0 20px 50px #0003}.mbox h3{margin:0 0 10px}
+.mbtns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}.minput{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px}
+.plist{display:flex;flex-direction:column;gap:8px}.prow{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.unitnote{font-size:12px;color:var(--mut);margin-top:16px}
+@media (max-width:1180px){
+  .scn{flex-wrap:wrap}
+  .layout{grid-template-columns:1fr;gap:14px;padding:14px}body.wide .layout{grid-template-columns:1fr}
+  .side{position:static;order:1}#summary{order:2}#main{order:3}.side .adv{margin:8px 4px 0}.side-note{display:none}
+  #steps{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .step{white-space:nowrap;padding:7px 10px}
+  #summary{position:sticky;top:var(--toph,104px);z-index:10;max-height:none;padding:10px 14px;display:flex;gap:4px 18px;overflow-x:auto;align-items:center;border-radius:12px}
+  #summary .sum-head,#summary .sum-sep,#summary .warns,#summary .ex-count,#summary .metric:nth-of-type(n+8),#summary .btn{display:none}
+  #summary .metric{border:0;padding:0;flex-direction:column;align-items:flex-start;gap:0;min-width:max-content}
+  #summary .metric span small,#summary .metric span br{display:none}#summary .metric span{font-size:11.5px;color:var(--mut)}#summary .metric.big b,#summary .metric b{font-size:16px}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}.charts{grid-template-columns:1fr}
+  .actions{margin-left:0}.statusbar{flex-wrap:wrap}.statusbar .units{margin-left:0}
+}
+@media (max-width:560px){.grid{grid-template-columns:1fr}.field.wide{grid-column:auto}.cards{grid-template-columns:1fr}}
+.chart-cap{margin:6px 0 0}
+
+/* ===== iOS / iPadOS 27 design layer (Liquid Glass), laptop adaptation ===== */
+:root{color-scheme:light dark;--bg:#F2F2F7;--card:#FFFFFF;--ink:#000;--mut:rgba(60,60,67,.64);--line:rgba(60,60,67,.18);--line2:rgba(60,60,67,.29);
+ --fill:rgba(120,120,128,.12);--fill2:rgba(120,120,128,.07);--acc:#007AFF;--acc-d:#0062CC;--acc2:rgba(0,122,255,.10);--bad:#D70015;--warn:#B25000;--good:#248A3D;
+ --ex:#9A5B00;--exbg:rgba(255,149,0,.14);--glass:rgba(255,255,255,.66);--glass-solid:#F9F9F9;--glass-edge:rgba(0,0,0,.08);--glass-hi:rgba(255,255,255,.9);
+ --side:#FFFFFF;--float:0 8px 28px rgba(0,0,0,.10),0 1px 3px rgba(0,0,0,.06);--sys:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1C1C1E;--ink:#fff;--mut:rgba(235,235,245,.62);--line:rgba(84,84,88,.5);--line2:rgba(84,84,88,.7);
+ --fill:rgba(118,118,128,.24);--fill2:rgba(118,118,128,.14);--acc:#0A84FF;--acc-d:#409CFF;--acc2:rgba(10,132,255,.18);--bad:#FF453A;--warn:#FF9F0A;--good:#30D158;
+ --ex:#FFB340;--exbg:rgba(255,159,10,.16);--glass:rgba(30,30,32,.62);--glass-solid:#1C1C1E;--glass-edge:rgba(0,0,0,.6);--glass-hi:rgba(255,255,255,.12);--side:#1C1C1E;--float:0 8px 28px rgba(0,0,0,.5)}}
+html,body{font:15px/1.4 var(--sys);letter-spacing:-.005em;background:var(--bg);color:var(--ink)}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px;border-radius:8px}
+/* glass toolbar */
+.top{background:var(--glass-solid);border-bottom:0;box-shadow:0 .5px 0 var(--line2);padding:12px 22px 10px}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.top{background:var(--glass);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%)}}
+.brand small{color:var(--mut)}.brand b{font-size:17px}
+.scn{background:var(--fill2);border-radius:999px;padding:3px 4px 3px 12px}
+.scn select,select,.minput{border:0;background:var(--fill);border-radius:10px;color:var(--ink)}
+.scn select{border-radius:999px;padding:6px 12px;min-width:0}
+@media (min-width:1200px){.scn select{max-width:300px}}
+/* capsule buttons */
+.btn{border:0;background:var(--fill);color:var(--acc);border-radius:999px;padding:7px 15px;font-weight:600;transition:background .15s,transform .1s}
+.btn:hover{border:0;background:rgba(120,120,128,.2)}.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--acc);color:#fff}.btn.primary:hover{background:var(--acc-d)}
+.btn.ghost{background:var(--fill)}.btn.danger{background:#FF3B30;color:#fff}
+.btn.icon{padding:5px 12px;background:transparent}.btn.icon:hover{background:var(--fill)}
+.link{color:var(--acc);text-decoration:none;font-weight:500}.link:hover{text-decoration:underline}
+/* iPadOS sidebar */
+.layout{grid-template-columns:250px minmax(0,1fr) 330px;gap:24px;padding:22px}body.wide .layout{grid-template-columns:250px minmax(0,1fr)}
+.side{background:var(--side);border-radius:24px;padding:10px;box-shadow:0 0 0 .5px var(--line)}
+.step{color:var(--ink);border-radius:12px;padding:10px 12px;font-size:15px}
+.step:hover{background:var(--fill2)}.step.active{background:var(--acc);color:#fff;box-shadow:none;font-weight:600}
+.step .num{background:var(--fill);color:var(--ink);font-weight:600}.step.active .num{background:rgba(255,255,255,.25);color:#fff}
+.side .adv{margin:14px 8px 6px;color:var(--ink)}.side-note{color:var(--mut);margin:0 8px 6px}
+/* large titles + grouped forms */
+.step-head h1{font-size:34px;font-weight:700;letter-spacing:.005em;margin:4px 0 6px}.step-head p{color:var(--mut)}
+.card{background:var(--card);border:0;border-radius:24px;padding:20px 22px;margin-bottom:20px}
+.card h2{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.lab label{font-size:13.5px;font-weight:500;color:var(--ink)}
+.help-btn{border:0;background:var(--fill);color:var(--acc);font-family:var(--sys);font-style:normal}
+.help{background:var(--fill2);color:var(--ink);border-radius:12px}
+.iw{border:0;background:var(--fill2);border-radius:12px}
+.iw:focus-within{background:var(--fill2);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 35%,transparent);border:0}
+.iw input{padding:10px 12px;color:var(--ink)}.gc .iw input::placeholder{color:var(--mut)}
+select{padding:10px 12px}
+.badge.old{background:var(--acc2);color:var(--acc)}
+.field-note{background:var(--exbg);color:var(--ink);border-left:0;border-radius:12px;padding:9px 12px}
+.note-box{background:var(--exbg);color:var(--ink);border-radius:18px}
+.info-line{background:var(--acc2);color:var(--ink);border-radius:18px}
+.live{border-top:.5px solid var(--line2)}
+/* switches for tickboxes */
+.check input[type=checkbox],.adv input[type=checkbox]{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:rgba(120,120,128,.24);position:relative;cursor:pointer;margin:0;flex:none;transition:background .2s}
+.check input[type=checkbox]::after,.adv input[type=checkbox]::after{content:"";position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18),0 1px 1px rgba(0,0,0,.12);transition:transform .2s}
+.check input[type=checkbox]:checked,.adv input[type=checkbox]:checked{background:#34C759}
+.check input[type=checkbox]:checked::after,.adv input[type=checkbox]:checked::after{transform:translateX(18px)}
+.check .chk{gap:10px}
+/* summary as floating inset group */
+#summary{background:var(--card);border:0;border-radius:24px;padding:18px 20px}
+.metric{border-top:.5px solid var(--line)}.metric span{color:var(--ink)}.metric small{color:var(--mut)}
+.metric.big b{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.sum-label{letter-spacing:.02em;text-transform:none;font-size:12px}
+.warns li{background:var(--exbg);color:var(--ink);border-radius:12px}.warns li.bad{background:rgba(255,59,48,.12);color:var(--bad)}.warns li.info{background:var(--fill2);color:var(--ink)}
+.ex-count{background:var(--exbg);color:var(--ink);border-radius:12px}
+/* results */
+.rcard,.chart-card{background:var(--card);border:0;border-radius:22px}
+.rv{font-size:24px;font-weight:700}.rt,.rs{color:var(--mut)}
+.chart-card h3{font-size:16px}
+svg .grid{stroke:var(--line)}svg .zero{stroke:var(--mut)}svg .ax{fill:var(--mut)}svg .buildzone{fill:var(--fill2)}svg .pt{stroke:var(--card);stroke-width:1}
+.legend{color:var(--ink)}.legend i{border-radius:50%}.legend i.ln{border-radius:0}
+/* segmented control */
+.tabs{display:inline-flex;background:var(--fill);border-radius:999px;padding:3px;gap:0}
+.tab{border:0;background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;font-weight:500}
+.tab.active{background:var(--card);color:var(--ink);border:0;box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04);font-weight:600}
+@media (prefers-color-scheme:dark){.tab.active{background:#636366}}
+.yt th{color:var(--mut);border-bottom:.5px solid var(--line2)}.yt td{border-bottom:.5px solid var(--line)}.yt tbody tr:hover{background:var(--fill2)}
+.cmp td:first-child,details.how li{color:var(--ink)}
+.tag{background:var(--acc2);color:var(--acc)}
+/* sheets */
+#modal{background:rgba(0,0,0,.32)}
+.mbox{background:var(--card);border-radius:28px;padding:24px;box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.prow{border:0;background:var(--fill2);border-radius:14px}
+/* accessibility */
+@media (prefers-reduced-transparency:reduce){.top{background:var(--glass-solid)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}}
+@media (prefers-contrast:more){:root{--mut:rgba(60,60,67,.88);--line:rgba(60,60,67,.5)}.card,.side,#summary,.rcard,.chart-card{box-shadow:inset 0 0 0 1px var(--line2)}.top{background:var(--glass-solid)!important}.iw,select{box-shadow:inset 0 0 0 1px var(--line2)}}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){:root{--mut:rgba(235,235,245,.85)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media (max-width:1180px){.side{padding:6px;border-radius:18px}#summary{border-radius:18px}}
+@media print{:root{color-scheme:light}}
+/* ===== Greg style (Repforge gym app): white canvas, thin-bordered white cards, grey fills, grouped glass capsule header buttons, list sidebar. Dark follows the device. ===== */
+:root{--bg:#fff;--card:#fff;--grey:#f2f4f7;--line:#e4e6e9;--line2:#e4e6e9;--ink:#01091c;--mut:#84888e;--acc:#3d8af7;--acc-d:#2f7ae6;--acc2:rgba(61,138,247,.10);--good:#1f9d48;--bad:#ff3b30;
+ --fill:#f2f4f7;--fill2:#f2f4f7;--side:#fff;--glass:rgba(255,255,255,.62);--glass-solid:#fff;--glass-b:rgba(255,255,255,.75);
+ --glass-sh:0 8px 28px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(0,0,0,.04);--pill:rgba(120,120,128,.16);--chev:#a6a9ae;
+ --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#000;--card:#1c1c1e;--grey:#2c2c2e;--line:#38383a;--line2:#38383a;--ink:#fff;--mut:#8e8e93;--acc:#0a84ff;--acc-d:#409cff;--acc2:rgba(10,132,255,.18);--good:#30d158;--bad:#ff453a;
+ --fill:#2c2c2e;--fill2:#2c2c2e;--side:#1c1c1e;--glass:rgba(30,30,32,.62);--glass-solid:#1c1c1e;--glass-b:rgba(255,255,255,.12);
+ --glass-sh:0 8px 28px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.10),inset 0 -1px 0 rgba(0,0,0,.3);--pill:rgba(120,120,128,.32);--chev:#5a5a5f}}
+html,body{font:15px/1.35 var(--sys);letter-spacing:0;background:var(--bg);color:var(--ink)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+/* header: plain background, title 23/700, buttons grouped in glass capsules */
+.top{background:var(--bg);box-shadow:none;border-bottom:.5px solid var(--line);padding:10px 22px 8px;align-items:center}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.top{background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}}
+.brand small{color:var(--mut);font-size:12px}.brand b{font-size:23px;font-weight:700;letter-spacing:-.3px}
+.scn,.actions{height:46px;border-radius:23px;padding:0 4px 0 6px;display:flex;align-items:center;gap:0;background:var(--glass-solid);border:.5px solid var(--glass-b);box-shadow:var(--glass-sh)}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.scn,.actions{background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}}
+.scn label{color:var(--mut);padding:0 6px 0 10px}
+.scn select{background:var(--grey);border-radius:10px;height:34px;padding:0 10px}
+.actions .btn,.scn .btn{background:none;border:0;border-radius:20px;height:44px;min-width:40px;padding:0 12px;color:var(--ink);font-weight:500;font-size:15px;box-shadow:none}
+.actions .btn:hover,.scn .btn:hover{background:var(--pill)}
+.actions .btn.primary{color:var(--acc);font-weight:600}
+.scn .btn{color:var(--acc)}
+/* buttons elsewhere: primary blue 40 / radius 8; grey 47 / radius 10 */
+.btn{border:0;background:var(--grey);color:var(--ink);border-radius:10px;min-height:40px;padding:0 14px;font-weight:500;transform:none}
+.btn:hover{background:var(--line)}.btn:active{transform:none;opacity:.85}
+.btn.primary{background:var(--acc);color:#fff;border-radius:8px}.btn.primary:hover{background:var(--acc-d)}
+.btn.ghost{background:var(--grey);color:var(--ink);min-height:47px;font-size:16px}.nav-row .btn.primary{min-height:47px;font-size:16px;border-radius:10px}
+.btn.danger{background:var(--grey);color:var(--bad)}
+.link{color:var(--acc);font-weight:500}
+/* list-style sidebar */
+.layout{gap:24px;padding:20px 22px}
+.side{background:var(--bg);border-radius:12px;padding:0;box-shadow:none;border:1px solid var(--line);overflow:hidden}
+.step{border-radius:0;padding:0 14px;min-height:52px;display:flex;align-items:center;gap:14px;font-size:16px;color:var(--ink);border-bottom:.5px solid var(--line);position:relative}
+.step::after{content:"›";margin-left:auto;color:var(--chev);font-size:20px}
+.step:hover{background:var(--grey)}
+.step.active{background:var(--grey);color:var(--acc);font-weight:600}
+.step .num{background:transparent;border:1.7px solid currentColor;color:inherit;width:24px;height:24px;font-size:12px}
+.step.active .num{background:transparent;color:var(--acc)}
+.side .adv{margin:0;padding:14px;color:var(--ink);background:var(--grey)}.side-note{color:var(--mut);margin:0;padding:0 14px 14px;background:var(--grey);font-size:13px}
+/* titles + cards */
+.step-head h1{font-size:23px;font-weight:700;letter-spacing:-.3px;margin:6px 0 4px}.step-head p{color:var(--mut)}
+.card,#summary,.rcard,.chart-card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:none}
+@media (prefers-color-scheme:dark){.card,#summary,.rcard,.chart-card,.side{border-color:transparent}.side{background:var(--card)}.side .adv,.side-note{background:var(--card)}}
+.card{padding:14px 16px 16px;margin-bottom:14px}.card h2{font-size:17px;font-weight:600}
+#summary{padding:14px 16px}.metric.big b{font-size:28px;font-weight:600;letter-spacing:-.3px}
+.rv{font-size:22px;font-weight:600}
+.iw{background:var(--grey);border-radius:10px}select{background:var(--grey);border-radius:10px}
+.help-btn{background:var(--grey)}.help{background:var(--grey);border-radius:10px}
+.tabs{background:var(--grey);border-radius:10px;padding:2px}.tab{border-radius:8px}
+.tab.active{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+@media (prefers-color-scheme:dark){.tab.active{background:#636366}}
+.mbox{background:var(--card);border-radius:12px}
+.prow{background:var(--grey);border-radius:10px}
+.yt th{border-bottom:.5px solid var(--line)}.yt td{border-bottom:.5px solid var(--line)}.yt tbody tr:hover{background:var(--grey)}
+@media (prefers-reduced-transparency:reduce){.top,.scn,.actions{background:var(--glass-solid)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}}
+@media (prefers-contrast:more){:root{--line:#8e8e93;--mut:#4a4d52}}
+@media (prefers-contrast:more) and (prefers-color-scheme:dark){:root{--mut:#c7c7cc}}
+@media print{.top{position:static}.scn,.actions{box-shadow:none}}
+.top .actions .btn.primary{background:var(--acc);color:#fff;border-radius:20px;height:38px;margin:0 2px}.top .actions .btn.primary:hover{background:var(--acc-d)}
+
+/* ---- Scaling pass: one-row header, consistent capsule buttons, 44px targets ---- */
+@media (min-width:1100px){.top{flex-wrap:nowrap;gap:12px}.brand{flex:0 1 auto;min-width:120px}.brand b{max-width:220px}.scn,.actions{flex:none}.actions{margin-left:auto;flex-wrap:nowrap}.scn label{display:none}.scn select{max-width:200px}}
+.actions .btn,.scn .btn{height:44px;padding:0 11px;white-space:nowrap;flex-shrink:0;position:relative}
+.top .actions .btn.primary{height:38px;border-radius:19px;margin:0 3px}
+.top .actions .btn.primary::before{content:"";position:absolute;inset:-3px -3px}
+.link.sm,.help-btn,.badge,.tabs .tab{position:relative}
+.link.sm::before{content:"";position:absolute;inset:-14px -6px}
+.help-btn::before{content:"";position:absolute;inset:-13px}
+.badge::before{content:"";position:absolute;inset:-12px 0}
+.tabs .tab{min-height:36px}.tabs .tab::before{content:"";position:absolute;inset:-4px 0}
+.btn{position:relative}aside .btn.primary{height:44px}
+@media (min-width:1100px){.top{flex-wrap:wrap}.top>.statusbar{flex:0 0 100%}.brand b{white-space:nowrap}}
+.top .actions .btn.primary{min-height:0;height:38px}
+
+/* ---- phones and tablets ---- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);padding-bottom:env(safe-area-inset-bottom)}
+.top{padding-top:max(10px,env(safe-area-inset-top))}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.tbl-wrap table{min-width:640px}
+main,#main{min-width:0}
+@media (pointer:coarse){
+  .btn,.btn.primary,.actions .btn,button,select,.tab,#steps button,#steps a,.link{min-height:44px!important}
+  input[type=text],input[type=number],input:not([type]),select,textarea{min-height:44px;font-size:16px}
+  input[type=checkbox]{width:22px;height:22px}
+  label.chk,.side .adv{min-height:44px;display:flex;align-items:center;gap:8px}
+}
+@media (max-width:1180px){#steps{scroll-snap-type:x proximity}#steps>*{scroll-snap-align:start;flex:none;white-space:nowrap}}
+@media (max-width:560px){
+  .top{gap:8px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}.actions .btn{width:100%}
+  .scn{flex-wrap:wrap;width:100%}.scn select{flex:1 1 100%;min-width:0}
+  .units{display:block;font-size:12px}
+}
+@media (max-width:1180px){.layout,body.wide .layout{grid-template-columns:minmax(0,1fr);gap:14px;padding:14px max(14px,env(safe-area-inset-right)) 14px max(14px,env(safe-area-inset-left))}}
+@media (max-width:1099px){.scn,.actions{height:auto;min-height:46px;padding:4px 6px;flex-wrap:wrap;border-radius:23px}.actions{gap:4px}}
+@media (max-width:560px){.scn,.actions{border-radius:18px;width:100%;box-sizing:border-box}.scn{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:4px}.scn select{grid-column:2/5}.scn label{grid-row:1}.scn .btn{grid-row:2;width:100%}.scn .btn:nth-of-type(1){grid-column:2}.actions{display:grid;grid-template-columns:1fr 1fr;padding:6px}}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="brand"><small>Hotel return on investment</small><div class="pn"><b id="project-name"></b><button class="link sm" data-action="rename-proj">Rename</button></div></div>
+  <div class="scn"><label for="scenario-select">Scenario</label><select id="scenario-select"></select>
+    <button class="btn icon" data-action="dup" title="Copy this scenario so you can try changes">Duplicate</button>
+    <button class="btn icon" data-action="rename-scn">Rename</button>
+    <button class="btn icon" data-action="del-scn">Delete</button></div>
+  <div class="actions">
+    <button class="btn" data-action="projects">Projects</button>
+    <button class="btn" data-action="open-file">Open project file</button>
+    <button class="btn primary" data-action="save-file">Save project file</button>
+    <button class="btn" data-action="excel">Export to Excel</button>
+    <input type="file" id="file-input" accept=".json,application/json" hidden>
+  </div>
+  <div class="statusbar"><span id="save-state"></span><span class="units">Money in Rp juta (millions of rupiah); totals in miliar (1 miliar = 1.000 juta). Works offline; nothing leaves this device.</span></div>
+</header>
+<div class="layout">
+  <div class="side"><nav id="steps"></nav><label class="adv"><input type="checkbox" id="adv-toggle"> Show advanced inputs</label><p class="side-note">Advanced inputs add construction spending by year, food and drink per occupied room, brand fees, interest during construction and tax depreciation groups.</p></div>
+  <main id="main"></main>
+  <aside id="summary"></aside>
+</div>
+<div id="modal" hidden></div>
+<script>/* Hotel return on investment model. All money in Rp juta (millions of rupiah) unless stated.
+   Timeline: index t = 0 .. C-1 are construction years, t = C .. C+H-1 are operating years 1..H.
+   All cash flows are treated as falling at the end of each year; t = 0 is not discounted. */
+var HotelModel = (function () {
+  function n(x, d) { x = Number(x); return isFinite(x) ? x : (d || 0); }
+  function clampInt(x, lo, hi) { x = Math.round(n(x, lo)); return Math.max(lo, Math.min(hi, x)); }
+  function zeros(k) { var a = []; for (var i = 0; i < k; i++) a.push(0); return a; }
+  function sum(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return s; }
+  function hasVal(o, k) { return o && o[k] !== undefined && o[k] !== null && o[k] !== '' && isFinite(Number(o[k])); }
+
+  function npv(rate, cfs) { var s = 0; for (var t = 0; t < cfs.length; t++) s += cfs[t] / Math.pow(1 + rate, t); return s; }
+
+  // Internal rate of return: bracket a sign change on a grid, then bisect. Returns null if none.
+  function irr(cfs) {
+    var hasPos = cfs.some(function (v) { return v > 1e-9; }), hasNeg = cfs.some(function (v) { return v < -1e-9; });
+    if (!hasPos || !hasNeg) return null;
+    var grid = [-0.99, -0.9, -0.75, -0.5, -0.3, -0.2, -0.1, -0.05, 0, 0.02, 0.05, 0.08, 0.1, 0.12, 0.15, 0.2, 0.3, 0.5, 0.75, 1, 2, 5, 10];
+    var prev = grid[0], fprev = npv(prev, cfs);
+    for (var i = 1; i < grid.length; i++) {
+      var r = grid[i], f = npv(r, cfs);
+      if ((fprev <= 0 && f >= 0) || (fprev >= 0 && f <= 0)) {
+        var lo = prev, hi = r, flo = fprev;
+        for (var k = 0; k < 200; k++) {
+          var mid = (lo + hi) / 2, fm = npv(mid, cfs);
+          if ((flo <= 0 && fm <= 0) || (flo >= 0 && fm >= 0)) { lo = mid; flo = fm; } else { hi = mid; }
+          if (hi - lo < 1e-12) break;
+        }
+        return (lo + hi) / 2;
+      }
+      prev = r; fprev = f;
+    }
+    return null;
+  }
+
+  // Payback in operating years after opening, with part-year. cfs indexed by t; opening at t=C.
+  function payback(cfs, C) {
+    var cum = 0;
+    for (var t = 0; t < cfs.length; t++) {
+      var before = cum; cum += cfs[t];
+      if (t >= C && before < 0 && cum >= 0) return (t - C) + (-before / cfs[t]);
+    }
+    return null;
+  }
+
+  // Indonesian corporate tax with 5-year loss carry-forward (first in, first out).
+  function taxSchedule(taxableBefore, rate) {
+    var losses = [], out = { used: [], taxable: [], tax: [], available: [], expired: [] };
+    for (var y = 0; y < taxableBefore.length; y++) {
+      var tb = taxableBefore[y], used = 0, expired = 0;
+      // drop losses older than 5 years (a loss from year k can be used in years k+1 .. k+5)
+      losses = losses.filter(function (l) { if (y - l.y > 5) { expired += l.amt; return false; } return true; });
+      if (tb < 0) { losses.push({ y: y, amt: -tb }); }
+      else {
+        var remaining = tb;
+        for (var i = 0; i < losses.length && remaining > 0; i++) {
+          var u = Math.min(losses[i].amt, remaining); losses[i].amt -= u; remaining -= u; used += u;
+        }
+        losses = losses.filter(function (l) { return l.amt > 1e-9; });
+      }
+      var taxable = Math.max(0, tb - used);
+      out.used.push(used); out.taxable.push(taxable); out.tax.push(taxable * rate);
+      out.available.push(sum(losses.map(function (l) { return l.amt; }))); out.expired.push(expired);
+    }
+    return out;
+  }
+
+  function run(I) {
+    var C = clampInt(I.constructionYears, 1, 5), H = clampInt(I.holdYears, 1, 30), T = C + H;
+    var p = function (k) { return n(I[k]) / 100; };
+    var land = Math.max(0, n(I.land)), constr = Math.max(0, n(I.construction)), cont = constr * p('contingencyPct');
+    var ffe = Math.max(0, n(I.ffe)), soft = Math.max(0, n(I.softCosts)), pre = Math.max(0, n(I.preOpening));
+    var devCost = land + constr + cont + ffe + soft + pre;
+    var warnings = [];
+
+    // drawdown of construction, contingency and professional fees across construction years
+    var dd = Array.isArray(I.drawdown) && I.drawdown.length === C ? I.drawdown.map(function (v) { return Math.max(0, n(v)); }) : null;
+    if (dd && sum(dd) <= 0) dd = null;
+    if (dd && Math.abs(sum(dd) - 100) > 0.01) warnings.push({ level: 'warn', text: 'Construction spending shares add up to ' + sum(dd).toFixed(1).replace('.', ',') + '%, so they have been scaled to 100%.' });
+    if (!dd) { dd = zeros(C).map(function () { return 100 / C; }); }
+    var ddS = sum(dd); dd = dd.map(function (v) { return v / ddS; });
+
+    var spend = zeros(T);
+    spend[0] += land;
+    for (var c = 0; c < C; c++) spend[c] += (constr + cont + soft) * dd[c];
+    spend[C - 1] += ffe + pre;
+
+    // loan sizing
+    var rate = p('interestRate');
+    var loanTarget = I.loanMode === 'amount' ? Math.min(Math.max(0, n(I.loanAmount)), devCost) : devCost * Math.min(1, Math.max(0, p('ltcPct')));
+    if (I.loanMode === 'amount' && n(I.loanAmount) > devCost + 1e-9) warnings.push({ level: 'warn', text: 'The loan is larger than the development cost, so it has been limited to the cost.' });
+    var loanShare = devCost > 0 ? loanTarget / devCost : 0;
+
+    var draw = zeros(T), open = zeros(T), interest = zeros(T), capInt = zeros(T), paidConstrInt = zeros(T), principal = zeros(T), exitRepay = zeros(T), close = zeros(T), equityIn = zeros(T);
+    var bal = 0;
+    for (var t = 0; t < C; t++) {
+      open[t] = bal; interest[t] = bal * rate; draw[t] = spend[t] * loanShare; bal += draw[t];
+      if (I.idcMode === 'pay') paidConstrInt[t] = interest[t]; else { capInt[t] = interest[t]; bal += interest[t]; }
+      close[t] = bal; equityIn[t] = spend[t] - draw[t] + paidConstrInt[t];
+    }
+    var idcTotal = sum(interest.slice(0, C));
+    var loanAtOpening = bal;
+
+    // operations
+    var g = p('adrGrowth'), infl = p('costInflation'), days = n(I.daysOpen, 365);
+    var ov = I.revOverride || {}, cp = I.customPrincipal || {};
+    var rows = [];
+    var grace = clampInt(I.graceYears, 0, 30), tenor = clampInt(I.tenorYears, 1, 40), repay = I.repayType || 'annuity';
+    var annuityPmt = null, straightAmt = null;
+    for (var y = 1; y <= H; y++) {
+      var tt = C + y - 1;
+      var occ = (y === 1 ? p('occ1') : y === 2 ? p('occ2') : p('occStab'));
+      var adrY = n(I.adr) * Math.pow(1 + g, y - 1);
+      var nights = Math.max(0, n(I.rooms)) * days * occ;
+      var roomsU = nights * adrY / 1e6;
+      var fnbU = I.fnbMode === 'perRoom' ? nights * n(I.fnbPerRoom) * Math.pow(1 + g, y - 1) / 1e6 : roomsU * p('fnbPct');
+      var otherU = roomsU * p('otherPct');
+      var totU = roomsU + fnbU + otherU, overridden = hasVal(ov, y), roomsR = roomsU, fnbR = fnbU, otherR = otherU;
+      if (overridden) {
+        var target = Math.max(0, n(ov[y]));
+        if (totU > 0) { var s = target / totU; roomsR *= s; fnbR *= s; otherR *= s; } else { roomsR = 0; fnbR = 0; otherR = target; }
+      }
+      var rev = roomsR + fnbR + otherR;
+      var dept = roomsR * p('roomsCostPct') + fnbR * p('fnbCostPct') + otherR * p('otherCostPct');
+      var und = n(I.undFixed) * Math.pow(1 + infl, y - 1) + rev * p('undVarPct');
+      var gop = rev - dept - und;
+      var baseFee = rev * p('baseFeePct'), incFee = Math.max(0, gop - baseFee) * p('incentiveFeePct'), brandFee = roomsR * p('brandFeePct');
+      var fees = baseFee + incFee + brandFee;
+      var fixed = n(I.fixedCharges) * Math.pow(1 + infl, y - 1);
+      var ebitda = gop - fees - fixed;
+      var reserve = rev * p('reservePct');
+      var noi = ebitda - reserve;
+
+      // debt
+      open[tt] = bal; interest[tt] = bal * rate;
+      var pr = 0;
+      if (repay === 'custom') pr = Math.max(0, n(cp[y]));
+      else if (y > grace && y <= grace + tenor) {
+        var k = y - grace;
+        if (repay === 'annuity' && rate > 0) {
+          if (annuityPmt === null) annuityPmt = bal * rate / (1 - Math.pow(1 + rate, -tenor));
+          pr = (k === tenor) ? bal : annuityPmt - interest[tt];
+        } else {
+          if (straightAmt === null) straightAmt = bal / tenor;
+          pr = (k === tenor) ? bal : straightAmt;
+        }
+      }
+      pr = Math.min(Math.max(0, pr), bal);
+      principal[tt] = pr; bal -= pr; close[tt] = bal;
+
+      rows.push({ y: y, t: tt, occ: occ, adr: adrY, nights: nights, roomsRev: roomsR, fnbRev: fnbR, otherRev: otherR, rev: rev, overridden: overridden,
+        dept: dept, und: und, gop: gop, baseFee: baseFee, incFee: incFee, brandFee: brandFee, fees: fees, fixed: fixed, ebitda: ebitda, reserve: reserve, noi: noi });
+    }
+
+    // depreciation (Indonesian simplified): building 20 years straight line incl. capitalised interest; furniture 4/8 years; pre-opening 4 years; land none
+    var bldgBase = constr + cont + soft + idcTotal, bldgBaseUnlev = constr + cont + soft;
+    var short = Math.min(1, Math.max(0, p('ffeShortLifePct')));
+    function dep(y, base) {
+      return (y <= 20 ? base / 20 : 0) + (y <= 4 ? ffe * short / 4 : 0) + (y <= 8 ? ffe * (1 - short) / 8 : 0) + (y <= 4 ? pre / 4 : 0);
+    }
+    // The replacement reserve is spent on replacement furniture and equipment: a capital cost, not an expense.
+    // Each year's spending is depreciated over 4 years (group 1, straight line) from the year it is spent.
+    function resDep(y) { var d = 0; for (var k = Math.max(1, y - 3); k <= y; k++) d += rows[k - 1].reserve / 4; return d; }
+    var taxRate = p('taxRate');
+    // Optional non-standard treatment (user's choice): deduct scheduled principal; depreciation can then be switched off.
+    // Principal deduction is non-standard; when chosen, depreciation is only deducted as well if the user explicitly ticks it.
+    var dedPrin = !!I.deductPrincipal, dedDep = dedPrin ? (I.deductDepreciation === true) : true;
+    // Thin capitalisation (PMK 169/2015): interest is deductible only on debt up to 4 times equity.
+    var eqBase = sum(equityIn), thinCapHit = false;
+    var tbLev = rows.map(function (r) {
+      r.reserveDep = resDep(r.y);
+      r.dep = dep(r.y, bldgBase) + r.reserveDep; r.depUnlev = dep(r.y, bldgBaseUnlev) + r.reserveDep; r.interest = interest[r.t];
+      var debt = open[r.t], allowed = debt > 1e-9 ? (eqBase > 0 ? Math.min(1, 4 * eqBase / debt) : 0) : 1;
+      if (allowed < 1 - 1e-9) thinCapHit = true;
+      r.interestDeducted = r.interest * allowed;
+      r.depDeducted = dedDep ? r.dep : 0; r.principalDeducted = dedPrin ? principal[r.t] : 0;
+      return r.ebitda - r.interestDeducted - r.depDeducted - r.principalDeducted;
+    });
+    // Project (unlevered) tax: no loan, so always the standard treatment.
+    var tbUnlev = rows.map(function (r) { return r.ebitda - r.depUnlev; });
+    var tx = taxSchedule(tbLev, taxRate), txU = taxSchedule(tbUnlev, taxRate);
+
+    // exit
+    var mode = I.exitMode || 'cap', last = rows[H - 1], tE = C - 1 + H, gross = 0;
+    if (mode === 'cap') gross = p('exitYield') > 0 ? Math.max(0, last.noi) / p('exitYield') : 0;
+    else if (mode === 'growth') gross = land * Math.pow(1 + p('landGrowth'), tE) + (devCost - land) * Math.pow(1 + p('buildingGrowth'), tE);
+    var sellCost = gross * p('sellingCostPct'), saleTax = gross * p('saleTaxPct'), netSale = gross - sellCost - saleTax;
+    var tLast = T - 1;
+    if (mode !== 'hold') { exitRepay[tLast] = close[tLast]; close[tLast] = 0; }
+    else if (close[tLast] > 0.5) warnings.push({ level: 'info', text: 'No sale is assumed, so the hotel\u2019s value and the loan still owed at the end are both left out of the results.' });
+
+    var projectCF = zeros(T), equityCF = zeros(T), equityOpCF = zeros(T), projectOpCF = zeros(T);
+    for (t = 0; t < C; t++) { projectCF[t] = -spend[t]; equityCF[t] = -equityIn[t]; projectOpCF[t] = projectCF[t]; equityOpCF[t] = equityCF[t]; }
+    rows.forEach(function (r, i) {
+      r.taxableBefore = tbLev[i]; r.lossesUsed = tx.used[i]; r.taxable = tx.taxable[i]; r.tax = tx.tax[i]; r.lossesAvailable = tx.available[i];
+      r.taxUnlev = txU.tax[i]; r.principal = principal[r.t]; r.debtService = r.interest + r.principal;
+      r.cfads = r.noi - r.tax; r.dscr = r.debtService > 1e-9 ? r.cfads / r.debtService : null;
+      r.openBal = open[r.t]; r.closeBal = close[r.t];
+      projectOpCF[r.t] = r.noi - r.taxUnlev;
+      equityOpCF[r.t] = r.cfads - r.interest - r.principal;
+      projectCF[r.t] = projectOpCF[r.t]; equityCF[r.t] = equityOpCF[r.t];
+    });
+    projectCF[tLast] += netSale; equityCF[tLast] += netSale - exitRepay[tLast];
+
+    var dr = p('discountRate');
+    var cum = 0, cumOp = 0, peak = 0, cumArr = [];
+    for (t = 0; t < T; t++) { cum += equityCF[t]; cumArr.push(cum); cumOp += equityOpCF[t]; peak = Math.max(peak, -cumOp); }
+    var equityInvested = sum(equityIn);
+    var pos = sum(equityCF.filter(function (v) { return v > 0; })), neg = -sum(equityCF.filter(function (v) { return v < 0; }));
+    var dscrs = rows.map(function (r) { return r.dscr; }).filter(function (v) { return v !== null; });
+    var coc = rows.map(function (r) { return equityInvested > 0 ? equityOpCF[r.t] / equityInvested : null; });
+    rows.forEach(function (r, i) { r.coc = coc[i]; r.equityCF = equityCF[r.t]; r.projectCF = projectCF[r.t]; });
+    var discEq = equityOpCF.map(function (v, t) { return v / Math.pow(1 + dr, t); });
+
+    var res = {
+      devCost: devCost, contingency: cont, idcTotal: idcTotal, totalCostWithInterest: devCost + idcTotal, loanTarget: loanTarget, loanAtOpening: loanAtOpening,
+      equityInvested: equityInvested, peakEquity: peak,
+      projectIRR: irr(projectCF), equityIRR: irr(equityCF), npvProject: npv(dr, projectCF), npvEquity: npv(dr, equityCF),
+      paybackSimple: payback(equityOpCF, C), paybackDiscounted: payback(discEq, C),
+      equityMultiple: neg > 0 ? pos / neg : null,
+      cocAvg: coc.length && equityInvested > 0 ? sum(coc) / coc.length : null, cocStabilised: H >= 3 && equityInvested > 0 ? coc[2] : (coc.length ? coc[coc.length - 1] : null),
+      dscrMin: dscrs.length ? Math.min.apply(null, dscrs) : null, dscrAvg: dscrs.length ? sum(dscrs) / dscrs.length : null,
+      salePrice: gross, sellingCosts: sellCost, saleTax: saleTax, netSale: netSale, loanRepaidAtExit: exitRepay[tLast], netToEquityAtExit: netSale - exitRepay[tLast],
+      stabilisedEbitda: rows[Math.min(2, H - 1)].ebitda, stabilisedRevenue: rows[Math.min(2, H - 1)].rev,
+      yieldOnCost: devCost > 0 ? rows[Math.min(2, H - 1)].noi / devCost : null,
+      totalRevenue: sum(rows.map(function (r) { return r.rev; })), totalTax: sum(rows.map(function (r) { return r.tax; }))
+    };
+    if (res.dscrMin !== null && res.dscrMin < 1.3) warnings.push({ level: 'bad', text: 'Debt service coverage falls to ' + res.dscrMin.toFixed(2).replace('.', ',') + ' (below 1,30, which banks usually require).' });
+    if (res.equityIRR === null) warnings.push({ level: 'bad', text: 'The return on your equity cannot be calculated: the cash flows never turn positive overall.' });
+    if (thinCapHit) warnings.push({ level: 'warn', text: 'The loan is more than 4 times your equity in some years, so part of the interest is not tax-deductible (Indonesian debt-to-equity limit of 4 to 1).' });
+    if (dedPrin) warnings.push({ level: 'info', text: 'Loan principal is being deducted before tax. This is not the standard Indonesian treatment; confirm with your tax adviser.' });
+    rows.forEach(function (r) { if (r.ebitda < 0) { if (!res._negEb) warnings.push({ level: 'warn', text: 'Operating profit (EBITDA) is negative in year ' + r.y + '.' }); res._negEb = true; } });
+    delete res._negEb;
+
+    return { C: C, H: H, T: T, rows: rows, spend: spend, draw: draw, open: open, interest: interest, capInt: capInt, paidConstrInt: paidConstrInt,
+      principal: principal, exitRepay: exitRepay, close: close, equityIn: equityIn, projectCF: projectCF, equityCF: equityCF, equityOpCF: equityOpCF,
+      cumEquity: cumArr, dd: dd, loanShare: loanShare, bldgBase: bldgBase, res: res, warnings: warnings,
+      expiredLosses: sum(tx.expired) };
+  }
+
+  return { run: run, irr: irr, npv: npv, payback: payback, taxSchedule: taxSchedule };
+})();
+if (typeof module !== 'undefined') module.exports = HotelModel;
+
+/* Minimal offline .xlsx writer: stored (uncompressed) zip + SpreadsheetML.
+   Cell: null | number | string | {v: number|string, f: 'formula without =', s: styleIndex} */
+var MiniXlsx = (function () {
+  var CRC = (function () { var t = [], c; for (var n = 0; n < 256; n++) { c = n; for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(b) { var c = 0xFFFFFFFF; for (var i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+  function utf8(s) { return new TextEncoder().encode(s); }
+  function zip(files) { // files: [{name, data:Uint8Array}]
+    var parts = [], central = [], offset = 0;
+    function u16(v) { return [v & 255, (v >>> 8) & 255]; }
+    function u32(v) { return [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255]; }
+    files.forEach(function (f) {
+      var name = utf8(f.name), crc = crc32(f.data), size = f.data.length;
+      var lh = [].concat([0x50, 0x4b, 0x03, 0x04], u16(20), u16(0x0800), u16(0), u16(0), u16(0x21), u32(crc), u32(size), u32(size), u16(name.length), u16(0));
+      parts.push(new Uint8Array(lh), name, f.data);
+      var ch = [].concat([0x50, 0x4b, 0x01, 0x02], u16(20), u16(20), u16(0x0800), u16(0), u16(0), u16(0x21), u32(crc), u32(size), u32(size), u16(name.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(offset));
+      central.push(new Uint8Array(ch), name);
+      offset += lh.length + name.length + size;
+    });
+    var cdSize = central.reduce(function (a, p) { return a + p.length; }, 0);
+    var end = new Uint8Array([].concat([0x50, 0x4b, 0x05, 0x06], u16(0), u16(0), u16(files.length), u16(files.length), u32(cdSize), u32(offset), u16(0)));
+    var all = parts.concat(central, [end]), len = all.reduce(function (a, p) { return a + p.length; }, 0), out = new Uint8Array(len), o = 0;
+    all.forEach(function (p) { out.set(p, o); o += p.length; });
+    return out;
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function colName(i) { var s = ''; i++; while (i > 0) { var m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+  // styles: 0 normal, 1 bold, 2 #,##0, 3 0.0%, 4 #,##0.00, 5 header (bold, fill), 6 #,##0 bold, 7 0.00x, 8 input #,##0 (blue), 9 input 0.0% (blue), 10 title (bold 14), 11 italic grey note, 12 input text (blue), 13 0.0 (years)
+  var STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+    '<numFmts count="5"><numFmt numFmtId="164" formatCode="#,##0"/><numFmt numFmtId="165" formatCode="0.0%"/><numFmt numFmtId="166" formatCode="#,##0.00"/><numFmt numFmtId="167" formatCode="0.00&quot;x&quot;"/><numFmt numFmtId="168" formatCode="0.0"/></numFmts>' +
+    '<fonts count="5"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><sz val="11"/><color rgb="FF1F4E9E"/><name val="Calibri"/></font><font><b/><sz val="14"/><name val="Calibri"/></font><font><i/><sz val="10"/><color rgb="FF777777"/><name val="Calibri"/></font></fonts>' +
+    '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8EFEA"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+    '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+    '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="14">' +
+    '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+    '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+    '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+    '<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+    '<xf numFmtId="166" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+    '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+    '<xf numFmtId="164" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/>' +
+    '<xf numFmtId="167" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+    '<xf numFmtId="164" fontId="2" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/>' +
+    '<xf numFmtId="165" fontId="2" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/>' +
+    '<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+    '<xf numFmtId="0" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+    '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>' +
+    '<xf numFmtId="168" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/>' +
+    '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
+  function sheetXml(sh) {
+    var x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">';
+    if (sh.freeze) x += '<sheetViews><sheetView workbookViewId="0"><pane xSplit="' + sh.freeze[0] + '" ySplit="' + sh.freeze[1] + '" topLeftCell="' + colName(sh.freeze[0]) + (sh.freeze[1] + 1) + '" activePane="bottomRight" state="frozen"/></sheetView></sheetViews>';
+    if (sh.cols) { x += '<cols>'; sh.cols.forEach(function (w, i) { x += '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; }); x += '</cols>'; }
+    x += '<sheetData>';
+    sh.rows.forEach(function (row, ri) {
+      if (!row) return;
+      x += '<row r="' + (ri + 1) + '">';
+      row.forEach(function (cell, ci) {
+        if (cell === null || cell === undefined || cell === '') return;
+        var ref = colName(ci) + (ri + 1), o = (typeof cell === 'object') ? cell : { v: cell };
+        var s = o.s !== undefined ? ' s="' + o.s + '"' : (typeof o.v === 'number' && !o.f ? ' s="2"' : '');
+        if (o.f) {
+          var isStr = typeof o.v === 'string';
+          x += '<c r="' + ref + '"' + s + (isStr ? ' t="str"' : '') + '><f>' + esc(o.f) + '</f>' + (o.v !== undefined && o.v !== null && (isStr || isFinite(o.v)) ? '<v>' + esc(o.v) + '</v>' : '') + '</c>';
+        } else if (typeof o.v === 'number') {
+          if (isFinite(o.v)) x += '<c r="' + ref + '"' + s + '><v>' + o.v + '</v></c>';
+        } else {
+          x += '<c r="' + ref + '"' + s + ' t="inlineStr"><is><t xml:space="preserve">' + esc(o.v) + '</t></is></c>';
+        }
+      });
+      x += '</row>';
+    });
+    x += '</sheetData>';
+    if (sh.merges && sh.merges.length) { x += '<mergeCells count="' + sh.merges.length + '">' + sh.merges.map(function (m) { return '<mergeCell ref="' + m + '"/>'; }).join('') + '</mergeCells>'; }
+    return x + '<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/></worksheet>';
+  }
+
+  function build(sheets, names) {
+    var files = [];
+    var ct = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+    sheets.forEach(function (s, i) { ct += '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'; });
+    ct += '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>';
+    files.push({ name: '[Content_Types].xml', data: utf8(ct) });
+    files.push({ name: '_rels/.rels', data: utf8('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>') });
+    files.push({ name: 'docProps/core.xml', data: utf8('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>Hotel return on investment</dc:title><dc:creator>Hotel return on investment calculator</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">' + new Date().toISOString().slice(0, 19) + 'Z</dcterms:created></cp:coreProperties>') });
+    var wb = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView activeTab="0"/></bookViews><sheets>';
+    sheets.forEach(function (s, i) { wb += '<sheet name="' + esc(s.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>'; });
+    wb += '</sheets>';
+    if (names && names.length) { wb += '<definedNames>' + names.map(function (d) { return '<definedName name="' + d.name + '">' + esc(d.ref) + '</definedName>'; }).join('') + '</definedNames>'; }
+    wb += '<calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>';
+    files.push({ name: 'xl/workbook.xml', data: utf8(wb) });
+    var rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+    sheets.forEach(function (s, i) { rels += '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>'; });
+    rels += '<Relationship Id="rId' + (sheets.length + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+    files.push({ name: 'xl/_rels/workbook.xml.rels', data: utf8(rels) });
+    files.push({ name: 'xl/styles.xml', data: utf8(STYLES) });
+    sheets.forEach(function (s, i) { files.push({ name: 'xl/worksheets/sheet' + (i + 1) + '.xml', data: utf8(sheetXml(s)) }); });
+    return zip(files);
+  }
+  return { build: build, colName: colName };
+})();
+
+/* Input definitions. unit: juta | rp | pct | years | year | rooms | days | select */
+var STEPS = [
+  { id: 'project', title: 'Project and costs', sub: 'What it costs to build and open the hotel, and when.' },
+  { id: 'revenue', title: 'Revenue', sub: 'Rooms, room rates, occupancy, and food, drinks and other income.' },
+  { id: 'costs', title: 'Operating costs and operator', sub: 'Hotel running costs, the operator\u2019s fees and the replacement reserve.' },
+  { id: 'financing', title: 'Financing', sub: 'The bank loan and how it is repaid.' },
+  { id: 'taxexit', title: 'Tax and exit', sub: 'Indonesian corporate income tax, selling the hotel, and the discount rate.' },
+  { id: 'results', title: 'Results', sub: 'Returns, payback, bank cover and the year-by-year detail.' },
+  { id: 'compare', title: 'Compare scenarios', sub: 'Key results for every scenario in this project, side by side.' }
+];
+
+var FIELDS = [
+  // ---- Project and costs
+  { key: 'openingYear', step: 'project', group: 'Timing', label: 'Opening year', unit: 'year', min: 2024, max: 2060, dec: 0, help: 'The calendar year the hotel opens to guests. Used only to label the years.' },
+  { key: 'constructionYears', step: 'project', group: 'Timing', label: 'Construction period', unit: 'years', min: 1, max: 5, dec: 0, help: 'Years from the start of building work to opening. Land is paid in the first year, building costs are spread over the period, and furniture and pre-opening costs fall in the last year.' },
+  { key: 'holdYears', step: 'project', group: 'Timing', label: 'Years of operation to analyse', unit: 'years', min: 1, max: 30, dec: 0, help: 'How many years after opening the analysis runs. If you choose a sale, the hotel is sold at the end of the last year.', warn: function (v) { return v < 5 ? 'Very short: hotels usually take 3 to 5 years to settle.' : v > 25 ? 'Long projections become guesswork.' : ''; } },
+  { key: 'land', step: 'project', group: 'Development cost', label: 'Land', unit: 'juta', min: 0, help: 'What the land cost you, or its value if you already own it. Land is not depreciated for tax.' },
+  { key: 'construction', step: 'project', group: 'Development cost', label: 'Construction', unit: 'juta', min: 0, help: 'Building works: structure, facade, mechanical, electrical, plumbing, fire protection, lifts, rooftop plant and basement.' },
+  { key: 'contingencyPct', step: 'project', group: 'Development cost', label: 'Contingency', unit: 'pct', min: 0, max: 50, help: 'An allowance for overruns, as a percentage of construction. 5 to 10% is common; use more while the design is still changing.', warn: function (v) { return v < 3 ? 'Low for a project still being designed.' : v > 20 ? 'Unusually high.' : ''; } },
+  { key: 'ffe', step: 'project', group: 'Development cost', label: 'Furniture, fixtures and equipment', unit: 'juta', min: 0, help: 'Beds, furniture, kitchen equipment, televisions, linen, operating supplies and IT systems. Depreciated over 4 or 8 years.' },
+  { key: 'softCosts', step: 'project', group: 'Development cost', label: 'Professional fees and permits', unit: 'juta', min: 0, help: 'Architect, engineers, quantity surveyor, project manager, permits (such as the building approval) and legal fees.' },
+  { key: 'preOpening', step: 'project', group: 'Development cost', label: 'Pre-opening costs', unit: 'juta', min: 0, help: 'Hiring and training staff before opening, launch marketing, and the operator\u2019s technical services fee. Spread over 4 years for tax.' },
+  { key: 'drawdown', step: 'project', group: 'Timing', label: 'Construction spending by year', unit: 'grid-dd', adv: true, help: 'How construction, contingency and professional fees are spread over the construction years, in percent. They should add up to 100%.' },
+
+  // ---- Revenue
+  { key: 'rooms', step: 'revenue', group: 'Rooms', label: 'Number of rooms', unit: 'rooms', min: 0, max: 2000, dec: 0, help: 'Rooms available to sell.' },
+  { key: 'adr', step: 'revenue', group: 'Rooms', label: 'Average daily rate in the opening year', unit: 'rp', min: 0, help: 'Average price per occupied room per night, excluding the 10% local hotel tax and any breakfast sold separately.', warn: function (v) { return v > 0 && v < 200000 ? 'Low for an upscale-midscale hotel.' : v > 2500000 ? 'Very high for most hotels in Indonesia.' : ''; } },
+  { key: 'adrGrowth', step: 'revenue', group: 'Rooms', label: 'Room rate growth per year', unit: 'pct', min: -20, max: 30, allowNeg: true, help: 'How much the average daily rate rises each year. Also applied to food and drink spending per occupied room.', warn: function (v) { return v > 10 ? 'Optimistic for a sustained rate.' : ''; } },
+  { key: 'daysOpen', step: 'revenue', group: 'Rooms', label: 'Days open per year', unit: 'days', min: 1, max: 366, dec: 0, adv: true, help: 'Normally 365.' },
+  { key: 'occ1', step: 'revenue', group: 'Occupancy (share of rooms sold)', label: 'Year 1', unit: 'pct', min: 0, max: 100, help: 'Share of available rooms sold in the first year. New hotels usually start lower while they build a reputation.', warn: function (v) { return v > 85 ? 'Very high for an opening year.' : ''; } },
+  { key: 'occ2', step: 'revenue', group: 'Occupancy (share of rooms sold)', label: 'Year 2', unit: 'pct', min: 0, max: 100, help: 'Share of rooms sold in the second year.', warn: function (v) { return v > 90 ? 'Very high.' : ''; } },
+  { key: 'occStab', step: 'revenue', group: 'Occupancy (share of rooms sold)', label: 'Year 3 onwards', unit: 'pct', min: 0, max: 100, help: 'The settled (stabilised) occupancy from year 3.', warn: function (v) { return v > 90 ? 'Very high for a city hotel.' : v < 40 ? 'Low: check the market.' : ''; } },
+  { key: 'fnbMode', step: 'revenue', group: 'Food, drinks and other income', label: 'Food and drink income is entered as', unit: 'select', adv: true, options: [['share', 'A share of rooms revenue'], ['perRoom', 'Spending per occupied room']], help: 'Choose whether restaurant, bar, breakfast and meeting income is a percentage of rooms revenue or an amount per occupied room per night.' },
+  { key: 'fnbPct', step: 'revenue', group: 'Food, drinks and other income', label: 'Food and drink income', unit: 'pct', sfx: '% of rooms revenue', min: 0, max: 300, show: function (I) { return I.fnbMode !== 'perRoom'; }, help: 'Restaurant, bar, breakfast, banquets and meetings, as a percentage of rooms revenue. Excludes the 10% local restaurant tax.' },
+  { key: 'fnbPerRoom', step: 'revenue', group: 'Food, drinks and other income', label: 'Food and drink spending per occupied room', unit: 'rp', min: 0, show: function (I) { return I.fnbMode === 'perRoom'; }, help: 'Average food and drink spending per occupied room per night in the opening year, excluding the 10% local restaurant tax.' },
+  { key: 'otherPct', step: 'revenue', group: 'Food, drinks and other income', label: 'Other income', unit: 'pct', sfx: '% of rooms revenue', min: 0, max: 100, help: 'Laundry, parking, spa, rentals and other income, as a percentage of rooms revenue.' },
+  { key: 'revOverride', step: 'revenue', group: 'Your own yearly revenue (optional)', label: 'Total revenue by year', unit: 'grid-rev', help: 'Leave blank to use the calculation above. Any year you fill in replaces the calculated total revenue for that year; the split between rooms, food and other income keeps the same proportions.' },
+
+  // ---- Costs
+  { key: 'roomsCostPct', step: 'costs', group: 'Departmental costs (vary with sales)', label: 'Rooms department', unit: 'pct', sfx: '% of rooms revenue', min: 0, max: 100, help: 'Housekeeping and front office staff, linen, amenities, laundry and booking commissions.', warn: function (v) { return v > 40 ? 'High for a rooms department.' : ''; } },
+  { key: 'fnbCostPct', step: 'costs', group: 'Departmental costs (vary with sales)', label: 'Food and drink department', unit: 'pct', sfx: '% of food and drink income', min: 0, max: 150, help: 'Food and drink purchases, kitchen and service staff.' },
+  { key: 'otherCostPct', step: 'costs', group: 'Departmental costs (vary with sales)', label: 'Other departments', unit: 'pct', sfx: '% of other income', min: 0, max: 150, help: 'Costs of laundry, parking, spa and other services.' },
+  { key: 'undFixed', step: 'costs', group: 'Undistributed costs (overheads)', label: 'Fixed overheads per year', unit: 'juta', min: 0, help: 'Administration, accounting, security, sales and marketing staff, maintenance team and base utilities that do not change much with occupancy. In opening-year prices; rises with cost inflation.' },
+  { key: 'undVarPct', step: 'costs', group: 'Undistributed costs (overheads)', label: 'Variable overheads', unit: 'pct', sfx: '% of total revenue', min: 0, max: 100, help: 'Overheads that move with sales: extra utilities, credit card fees, marketing spend, repairs.' },
+  { key: 'costInflation', step: 'costs', group: 'Undistributed costs (overheads)', label: 'Cost inflation per year', unit: 'pct', min: -10, max: 30, allowNeg: true, help: 'How fast fixed overheads, insurance and land and building tax rise each year.' },
+  { key: 'baseFeePct', step: 'costs', group: 'Hotel operator fees', label: 'Base management fee', unit: 'pct', sfx: '% of total revenue', min: 0, max: 20, help: 'Paid to the operator (for example Artotel) every year whatever the profit. Check the figure in the operator\u2019s proposal.', warn: function (v) { return v > 5 ? 'Above the usual 2 to 4%.' : ''; } },
+  { key: 'incentiveFeePct', step: 'costs', group: 'Hotel operator fees', label: 'Incentive management fee', unit: 'pct', sfx: '% of gross operating profit after the base fee', min: 0, max: 30, help: 'Paid to the operator as a share of gross operating profit after the base management fee (adjusted gross operating profit), which is the usual contract basis. It rewards profitable running. Some contracts use adjusted profit or a sliding scale; check the proposal.', warn: function (v) { return v > 12 ? 'Above the usual 6 to 10%.' : ''; } },
+  { key: 'brandFeePct', step: 'costs', group: 'Hotel operator fees', label: 'Brand, marketing and reservation fees', unit: 'pct', sfx: '% of rooms revenue', min: 0, max: 20, adv: true, help: 'Licence or royalty, marketing fund, loyalty programme and central reservation charges, combined.' },
+  { key: 'fixedCharges', step: 'costs', group: 'Fixed charges and reserve', label: 'Insurance and land and building tax per year', unit: 'juta', min: 0, help: 'Property insurance and land and building tax (Pajak Bumi dan Bangunan). In opening-year prices; rises with cost inflation.' },
+  { key: 'reservePct', step: 'costs', group: 'Fixed charges and reserve', label: 'Replacement reserve for furniture, fixtures and equipment', unit: 'pct', sfx: '% of total revenue', min: 0, max: 15, help: 'Money set aside each year to replace worn furniture and equipment. Operators and banks usually require 2 to 4%. For tax it is treated as buying replacement furniture and equipment, depreciated over 4 years, not as a cost deducted when it is set aside.', warn: function (v) { return v < 2 ? 'Operators usually require at least 2 to 3%.' : ''; } },
+
+  // ---- Financing
+  { key: 'loanMode', step: 'financing', group: 'Loan', label: 'Loan size is set as', unit: 'select', options: [['ltc', 'A share of the development cost'], ['amount', 'A fixed amount']], help: 'Banks usually lend a share of the total development cost (loan-to-cost).' },
+  { key: 'ltcPct', step: 'financing', group: 'Loan', label: 'Loan as a share of development cost', unit: 'pct', min: 0, max: 100, show: function (I) { return I.loanMode !== 'amount'; }, help: 'The rest is your own money (equity). Drawn in step with construction spending.', warn: function (v) { return v > 70 ? 'Indonesian banks rarely lend more than about 60 to 70% for a new hotel.' : ''; } },
+  { key: 'loanAmount', step: 'financing', group: 'Loan', label: 'Loan amount', unit: 'juta', min: 0, show: function (I) { return I.loanMode === 'amount'; }, help: 'Total loan facility, drawn in step with construction spending.' },
+  { key: 'interestRate', step: 'financing', group: 'Loan', label: 'Interest rate per year', unit: 'pct', min: 0, max: 40, help: 'The bank\u2019s annual interest rate.', warn: function (v) { return v > 15 ? 'High for a rupiah investment loan.' : v > 0 && v < 5 ? 'Low for a rupiah loan.' : ''; } },
+  { key: 'idcMode', step: 'financing', group: 'Loan', label: 'Interest during construction is', unit: 'select', adv: true, options: [['capitalise', 'Added to the loan'], ['pay', 'Paid in cash by you']], help: 'Before opening there is no income, so interest is either added to the loan balance (capitalised) or paid from your own money.' },
+  { key: 'repayType', step: 'financing', group: 'Repayment', label: 'Repayment type', unit: 'select', options: [['annuity', 'Equal instalments (principal and interest)'], ['straight', 'Equal principal each year'], ['custom', 'My own principal amounts by year']], help: 'Equal instalments keep the yearly payment the same. Equal principal pays more early on. Custom lets you type the principal for each year.' },
+  { key: 'graceYears', step: 'financing', group: 'Repayment', label: 'Interest-only years after opening', unit: 'years', min: 0, max: 30, dec: 0, show: function (I) { return I.repayType !== 'custom'; }, help: 'A grace period after opening when you pay interest but no principal, while the hotel ramps up.' },
+  { key: 'tenorYears', step: 'financing', group: 'Repayment', label: 'Repayment period after the interest-only years', unit: 'years', min: 1, max: 40, dec: 0, show: function (I) { return I.repayType !== 'custom'; }, help: 'Years over which the principal is repaid. Anything still owed when the hotel is sold is repaid from the sale.' },
+  { key: 'customPrincipal', step: 'financing', group: 'Repayment', label: 'Principal repaid by year', unit: 'grid-prin', show: function (I) { return I.repayType === 'custom'; }, help: 'Principal to repay in each year after opening. Anything still owed when the hotel is sold is repaid from the sale.' },
+
+  // ---- Tax and exit
+  { key: 'taxRate', step: 'taxexit', group: 'Corporate income tax (simplified estimate)', label: 'Corporate income tax rate', unit: 'pct', min: 0, max: 50, help: 'The standard Indonesian corporate income tax rate is 22%. Taxable profit = operating profit (EBITDA), minus deductible interest, minus tax depreciation (including replacement furniture bought from the reserve). Loan principal is not deductible. Interest on debt above 4 times equity is not deductible. Losses can be carried forward for 5 years.', warn: function (v) { return v !== 22 ? 'The standard Indonesian rate is 22%.' : ''; } },
+  { key: 'deductPrincipal', step: 'taxexit', group: 'Corporate income tax (simplified estimate)', label: 'Deduct loan principal repayments before tax (not standard)', unit: 'check', note: 'Standard Indonesian treatment: only interest and depreciation are deductible, not loan principal. Ticking this lowers the tax estimate; confirm with your tax adviser before relying on it. Only the scheduled yearly repayments are deducted, not any loan repaid from a sale.', help: 'Off by default. When ticked, the principal repaid each year is also subtracted from taxable profit.' },
+  { key: 'deductDepreciation', step: 'taxexit', group: 'Corporate income tax (simplified estimate)', label: 'Still deduct tax depreciation as well', unit: 'check', show: function (I) { return !!I.deductPrincipal; }, help: 'Off by default, so principal replaces depreciation and the cost of the hotel is not deducted twice. Tick only if your adviser confirms both can be deducted.' },
+  { key: 'ffeShortLifePct', step: 'taxexit', group: 'Corporate income tax (simplified estimate)', label: 'Share of furniture and equipment in the 4-year group', unit: 'pct', min: 0, max: 100, adv: true, help: 'Indonesian tax depreciation puts computers, small equipment and similar items in group 1 (4 years) and most furniture and kitchen equipment in group 2 (8 years). The rest goes in the 8-year group.' },
+  { key: 'exitMode', step: 'taxexit', group: 'Selling the hotel at the end', label: 'At the end of the analysis', unit: 'select', options: [['cap', 'Sell, valued on its earnings (yield)'], ['growth', 'Sell, valued by growing the cost'], ['hold', 'Keep it (no sale; value left out)']], help: 'Hotels are usually valued as net operating income divided by a market yield. Keeping it leaves the hotel\u2019s value and any remaining loan out of the returns, which understates them.' },
+  { key: 'exitYield', step: 'taxexit', group: 'Selling the hotel at the end', label: 'Exit yield (capitalisation rate)', unit: 'pct', min: 0.1, max: 40, show: function (I) { return (I.exitMode || 'cap') === 'cap'; }, help: 'Sale price = final-year net operating income (operating profit after the replacement reserve) divided by this yield. A lower yield means a higher price.', warn: function (v) { return v < 6 ? 'Low yield, so a high price: optimistic for Indonesia.' : v > 14 ? 'High yield, so a low price.' : ''; } },
+  { key: 'landGrowth', step: 'taxexit', group: 'Selling the hotel at the end', label: 'Land value growth per year', unit: 'pct', min: -20, max: 30, allowNeg: true, show: function (I) { return I.exitMode === 'growth'; }, help: 'Yearly growth in land value from the start of construction.' },
+  { key: 'buildingGrowth', step: 'taxexit', group: 'Selling the hotel at the end', label: 'Building value growth per year', unit: 'pct', min: -20, max: 30, allowNeg: true, show: function (I) { return I.exitMode === 'growth'; }, help: 'Yearly change in the value of everything except land. Buildings wear out, so 0% or negative is prudent.' },
+  { key: 'sellingCostPct', step: 'taxexit', group: 'Selling the hotel at the end', label: 'Selling costs', unit: 'pct', sfx: '% of sale price', min: 0, max: 20, show: function (I) { return I.exitMode !== 'hold'; }, help: 'Agent, legal and notary fees.' },
+  { key: 'saleTaxPct', step: 'taxexit', group: 'Selling the hotel at the end', label: 'Final tax on selling land and buildings', unit: 'pct', sfx: '% of sale price', min: 0, max: 20, show: function (I) { return I.exitMode !== 'hold'; }, help: 'Indonesian final income tax on transferring land and building rights is generally 2,5% of the price, paid by the seller. The buyer pays the land and building acquisition duty, so it is not included here.' },
+  { key: 'discountRate', step: 'taxexit', group: 'Discount rate', label: 'Discount rate for net present value', unit: 'pct', min: 0, max: 50, help: 'The yearly return you require, used to value future cash in today\u2019s money. A common starting point is the loan rate plus a few percent for the risk of owning a hotel.' }
+];
+var FIELD = {}; FIELDS.forEach(function (f) { FIELD[f.key] = f; });
+
+var BASE_INPUTS = {
+  openingYear: 2028, constructionYears: 2, holdYears: 10,
+  land: 10000, construction: 40000, contingencyPct: 5, ffe: 7000, softCosts: 4500, preOpening: 1500, drawdown: [40, 60],
+  rooms: 100, adr: 550000, adrGrowth: 4, daysOpen: 365, occ1: 60, occ2: 68, occStab: 74,
+  fnbMode: 'share', fnbPct: 25, fnbPerRoom: 150000, otherPct: 5, revOverride: {},
+  roomsCostPct: 25, fnbCostPct: 70, otherCostPct: 50, undFixed: 2500, undVarPct: 8, costInflation: 4,
+  baseFeePct: 3, incentiveFeePct: 8, brandFeePct: 2, fixedCharges: 400, reservePct: 3,
+  loanMode: 'ltc', ltcPct: 50, loanAmount: 25000, interestRate: 9, idcMode: 'capitalise', repayType: 'annuity', graceYears: 2, tenorYears: 10, customPrincipal: {},
+  taxRate: 22, deductPrincipal: false, deductDepreciation: false, ffeShortLifePct: 40, exitMode: 'cap', exitYield: 9, landGrowth: 3, buildingGrowth: 0, sellingCostPct: 2, saleTaxPct: 2.5, discountRate: 12
+};
+// inputs that are not assumptions (law or fact) and so carry no example badge
+var NOT_EXAMPLE = { deductPrincipal: 1, deductDepreciation: 1, taxRate: 1, saleTaxPct: 1, daysOpen: 1, revOverride: 1, customPrincipal: 1, fnbMode: 1, loanMode: 1, idcMode: 1, exitMode: 1, repayType: 1 };
+
+/* ---------- formatting ---------- */
+var NF = {};
+function nf(dec) { if (!NF[dec]) NF[dec] = new Intl.NumberFormat('id-ID', { minimumFractionDigits: dec, maximumFractionDigits: dec }); return NF[dec]; }
+function fmtNum(v, dec) { if (v === null || v === undefined || !isFinite(v)) return '\u2014'; var s = nf(dec || 0).format(Math.abs(v)); return (v < 0 && Math.abs(v) >= Math.pow(10, -(dec || 0)) / 2 ? '\u2212' : '') + s; }
+function money(v) { if (v === null || !isFinite(v)) return '\u2014'; var neg = v < 0, a = Math.abs(v), s = a >= 1000 ? fmtNum(a / 1000, 1) + ' miliar' : fmtNum(a, 0) + ' juta'; return (neg ? '\u2212' : '') + 'Rp ' + s; }
+function pct(v, dec) { return (v === null || v === undefined || !isFinite(v)) ? '\u2014' : fmtNum(v * 100, dec === undefined ? 1 : dec) + '%'; }
+function yrs(v) { return v === null ? 'Not reached' : fmtNum(v, 1) + ' years'; }
+function mult(v) { return v === null ? '\u2014' : fmtNum(v, 2) + '\u00d7'; }
+function tbl(v) { if (v === null || v === undefined || !isFinite(v)) return '\u2014'; if (Math.abs(v) < 0.5) return '\u2013'; return v < 0 ? '(' + nf(0).format(-v) + ')' : nf(0).format(v); }
+function esc(s) { return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function fmtInput(v, f) {
+  if (v === null || v === undefined || v === '' || !isFinite(v)) return '';
+  if (f && (f.unit === 'year')) return String(v);
+  var dec = (f && f.dec !== undefined) ? f.dec : (Math.round(v) === v ? 0 : (Math.round(v * 10) === v * 10 ? 1 : 2));
+  return nf(dec).format(v).replace('-', '\u2212');
+}
+// Accepts Indonesian (1.250,5) and plain (1250.5) styles.
+function parseNum(str) {
+  var s = String(str).trim().replace(/\s/g, '').replace(/^rp/i, '').replace(/[%\u00d7]/g, '').replace(/\u2212/g, '-');
+  if (s === '' || s === '-') return null;
+  if (s.indexOf(',') >= 0) s = s.replace(/\./g, '').replace(',', '.');
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+  var v = Number(s); return isFinite(v) ? v : NaN;
+}
+
+/* ---------- project data ---------- */
+var LIB_KEY = 'hotelRoiCalculator.v2';
+function uid(p) { return (p || 'id') + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+function exampleSrc(inputs) { var s = {}; Object.keys(inputs).forEach(function (k) { if (!NOT_EXAMPLE[k]) s[k] = 'ex'; }); return s; }
+function makeScenario(name, overrides, note) {
+  var inp = clone(BASE_INPUTS); Object.keys(overrides || {}).forEach(function (k) { inp[k] = overrides[k]; });
+  return { id: uid('s'), name: name, inputs: inp, src: exampleSrc(inp), note: note || '' };
+}
+var PUBLIC_BUILD = true; // set to true by build.py for the published website build
+function starterProject() {
+  if (PUBLIC_BUILD) { var q = blankProject('New hotel project'); q.scenarios = [makeScenario('Example', { construction: 30000, ffe: 5000, softCosts: 3000, preOpening: 1000 }, 'Every figure is an example \u2014 please replace them with your own.')]; q.activeScenario = q.scenarios[0].id; return q; }
+}
+function blankProject(name) {
+  var p = { app: 'hotel-roi-calculator', version: 2, id: uid('p'), name: name || 'New hotel project', updatedAt: Date.now(), scenarios: [makeScenario('Base case', {}, 'All figures are examples \u2014 please replace them with your own.')] };
+  p.activeScenario = p.scenarios[0].id; return p;
+}
+// Old calculator save format: { name, params:{landVal,...}, revs:{1:..}, prins:{1:..} }, values as strings, in Rp juta.
+function fromOldFormat(d) {
+  var P = d.params || {}, g = function (k, def) { var v = parseFloat(P[k]); return isFinite(v) ? v : def; };
+  var years = Math.min(30, Math.max(1, Math.round(g('projYears', 10)))), base = g('baseRev', 0), revs = {}, prins = {};
+  for (var y = 1; y <= years; y++) {
+    var rv = d.revs && d.revs[y] !== undefined && d.revs[y] !== '' ? parseFloat(d.revs[y]) : base; if (isFinite(rv)) revs[y] = rv;
+    var pv = d.prins && d.prins[y] !== undefined && d.prins[y] !== '' ? parseFloat(d.prins[y]) : NaN; if (isFinite(pv) && pv > 0) prins[y] = pv;
+  }
+  var map = { land: g('landVal', 0), construction: g('bldgVal', 0), contingencyPct: 0, ffe: 0, softCosts: 0, preOpening: 0, constructionYears: 1, holdYears: years,
+    loanMode: 'amount', loanAmount: g('loanBal', 0), interestRate: g('loanRate', 0), repayType: 'custom', customPrincipal: prins, graceYears: 0,
+    revOverride: revs, roomsCostPct: 0, fnbCostPct: 0, otherCostPct: 0, undFixed: 0, undVarPct: g('opCost', 0), baseFeePct: g('opFee', 0), incentiveFeePct: 0, brandFeePct: 0,
+    fixedCharges: 0, reservePct: 0, taxRate: g('taxRate', 22), deductPrincipal: true, deductDepreciation: false,
+    exitMode: 'growth', landGrowth: g('landApp', 0), buildingGrowth: g('bldgApp', 0), sellingCostPct: 0, saleTaxPct: 0 };
+  var s = makeScenario('Imported from old calculator', map,
+    'Imported from the old calculator file. Its yearly revenue is entered as your own yearly revenue, its operating costs as variable overheads, and the hotel is valued by growing land and building values as before. The old calculator deducted loan principal before tax and had no depreciation, so those boxes are ticked to match it \u2014 the standard Indonesian treatment deducts depreciation, not principal. Rooms, rates and occupancy are examples and are not used while yearly revenue is filled in.');
+  Object.keys(map).forEach(function (k) { if (!NOT_EXAMPLE[k]) s.src[k] = 'old'; });
+  var p = blankProject((d.name || 'Imported project') + ' (from old calculator)'); p.scenarios = [s]; p.activeScenario = s.id; return p;
+}
+function normaliseProject(p) {
+  p.scenarios.forEach(function (s) { Object.keys(BASE_INPUTS).forEach(function (k) { if (s.inputs[k] === undefined) s.inputs[k] = clone(BASE_INPUTS[k]); }); s.src = s.src || {}; });
+  if (!p.scenarios.some(function (s) { return s.id === p.activeScenario; })) p.activeScenario = p.scenarios[0].id;
+  return p;
+}
+
+/* ---------- state & storage ---------- */
+var lib = { projects: {}, lastOpen: null }, project = null, step = 'project', advanced = false, tableTab = 'ops', savedToFile = true, storageOk = true;
+function loadLib() { try { var raw = localStorage.getItem(LIB_KEY); if (raw) lib = JSON.parse(raw); } catch (e) { storageOk = false; } lib.projects = lib.projects || {}; }
+var saveTimer = null;
+function persist(changed) {
+  if (changed) { project.updatedAt = Date.now(); savedToFile = false; }
+  lib.projects[project.id] = project; lib.lastOpen = project.id; lib.advanced = advanced;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function () {
+    try { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); storageOk = true; } catch (e) { storageOk = false; }
+    renderSaveState();
+  }, 200);
+  renderSaveState();
+}
+function renderSaveState() {
+  var el = document.getElementById('save-state'); if (!el) return;
+  var t = new Date(project.updatedAt), hm = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+  el.innerHTML = (storageOk ? '<span class="dot ok"></span>Saved in this browser ' + hm : '<span class="dot bad"></span>This browser cannot save; use Save project file') +
+    (savedToFile ? '' : '<span class="nudge">Not yet saved to a file</span>');
+}
+function scen() { return project.scenarios.filter(function (s) { return s.id === project.activeScenario; })[0]; }
+function openProjectObj(p) { project = normaliseProject(p); step = 'project'; persist(false); renderAll(); }
+
+/* ---------- calculation cache ---------- */
+var cache = {};
+function calc(s) { var key = JSON.stringify(s.inputs); if (cache[s.id] && cache[s.id].key === key) return cache[s.id].r; var r = HotelModel.run(s.inputs); cache[s.id] = { key: key, r: r }; return r; }
+
+/* ---------- rendering: shell ---------- */
+function renderAll() {
+  document.getElementById('project-name').textContent = project.name;
+  var sel = document.getElementById('scenario-select');
+  sel.innerHTML = project.scenarios.map(function (s) { return '<option value="' + s.id + '"' + (s.id === project.activeScenario ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('');
+  document.getElementById('adv-toggle').checked = advanced;
+  document.getElementById('steps').innerHTML = STEPS.map(function (st, i) {
+    return '<button class="step' + (st.id === step ? ' active' : '') + '" data-step="' + st.id + '"><span class="num">' + (i < 5 ? i + 1 : (i === 5 ? '\u2713' : '\u21c4')) + '</span>' + st.title + '</button>';
+  }).join('');
+  document.body.classList.toggle('wide', step === 'results' || step === 'compare');
+  renderStep(); renderSummary(); renderSaveState();
+}
+function renderStep() {
+  var st = STEPS.filter(function (x) { return x.id === step; })[0], s = scen(), I = s.inputs, h = '';
+  h += '<div class="step-head"><h1>' + st.title + '</h1><p>' + st.sub + '</p></div>';
+  if (step === 'results') h += renderResults();
+  else if (step === 'compare') h += renderCompare();
+  else {
+    if (step === 'project' && s.note) h += '<div class="note-box">' + esc(s.note) + '</div>';
+    if (step === 'revenue') h += '<div class="info-line">Enter prices <b>without</b> the 10% local hotel and restaurant tax (Pajak Barang dan Jasa Tertentu). Guests pay it on top and the hotel passes it to the regional government, so it is not your revenue.</div>';
+    var groups = [], byGroup = {};
+    FIELDS.forEach(function (f) { if (f.step !== step) return; if (!byGroup[f.group]) { byGroup[f.group] = []; groups.push(f.group); } byGroup[f.group].push(f); });
+    groups.forEach(function (g) {
+      var fs = byGroup[g].filter(function (f) { return (!f.adv || advanced) && (!f.show || f.show(I)); });
+      if (!fs.length) return;
+      var isOverride = g.indexOf('optional') >= 0;
+      h += '<section class="card"' + '><h2>' + esc(g) + '</h2>';
+      if (isOverride) {
+        var any = Object.keys(I.revOverride || {}).some(function (k) { return I.revOverride[k] !== '' && I.revOverride[k] !== null; });
+        h += '<details class="override"' + (any ? ' open' : '') + '><summary>' + (any ? 'Yearly revenue is filled in for some years (click to view)' : 'Type your own total revenue for some or all years instead') + '</summary>';
+      }
+      h += '<div class="grid">' + fs.map(fieldHtml).join('') + '</div>';
+      if (isOverride) h += '</details>';
+      h += groupFooter(g) + '</section>';
+    });
+    var idx = STEPS.indexOf(st);
+    h += '<div class="nav-row">' + (idx > 0 ? '<button class="btn ghost" data-step="' + STEPS[idx - 1].id + '">\u2190 ' + STEPS[idx - 1].title + '</button>' : '<span></span>') +
+      '<button class="btn primary" data-step="' + STEPS[idx + 1].id + '">' + STEPS[idx + 1].title + ' \u2192</button></div>';
+  }
+  document.getElementById('main').innerHTML = h;
+  refreshLive();
+}
+function badgeHtml(s, key) {
+  var src = s.src[key];
+  if (src === 'ex') return '<button class="badge ex" data-confirm="' + key + '" title="This is an example value. Change it, or click here once you have checked it is right.">Example \u2014 please check</button>';
+  if (src === 'old') return '<button class="badge old" data-confirm="' + key + '" title="Taken from your old calculator file. Click once you have checked it.">From old calculator</button>';
+  return '';
+}
+function fieldHtml(f) {
+  var s = scen(), I = s.inputs, v = I[f.key], help = '<button class="help-btn" data-help="' + f.key + '" aria-label="What is this?">i</button>';
+  var head = '<div class="lab"><label for="f_' + f.key + '">' + esc(f.label) + '</label>' + help + badgeHtml(s, f.key) + '</div>';
+  var helpP = '<p class="help" id="h_' + f.key + '" hidden>' + esc(f.help) + '</p>';
+  if (f.unit === 'select') {
+    return '<div class="field wide">' + head + helpP + '<select id="f_' + f.key + '" data-key="' + f.key + '">' + f.options.map(function (o) { return '<option value="' + o[0] + '"' + (v === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>';
+  }
+  if (f.unit === 'check') {
+    return '<div class="field wide check"><label class="chk"><input type="checkbox" id="f_' + f.key + '" data-key="' + f.key + '"' + (v ? ' checked' : '') + '> ' + esc(f.label) + '</label>' + help + helpP + (f.note ? '<p class="field-note">' + esc(f.note) + '</p>' : '') + '</div>';
+  }
+  if (f.unit.indexOf('grid-') === 0) return '<div class="field full">' + head + helpP + gridHtml(f) + '</div>';
+  var pre = (f.unit === 'juta' || f.unit === 'rp') ? 'Rp' : '', suf = f.sfx || { juta: 'juta', rp: 'per night', pct: '%', years: 'years', rooms: 'rooms', days: 'days', year: '' }[f.unit];
+  return '<div class="field">' + head + helpP + '<div class="iw' + (pre ? ' has-pre' : '') + '">' + (pre ? '<span class="pre">' + pre + '</span>' : '') +
+    '<input id="f_' + f.key + '" data-key="' + f.key + '" type="text" inputmode="decimal" autocomplete="off" value="' + esc(fmtInput(v, f)) + '">' + (suf ? '<span class="suf">' + esc(suf) + '</span>' : '') + '</div>' +
+    '<p class="warn" id="w_' + f.key + '"></p></div>';
+}
+function gridHtml(f) {
+  var I = scen().inputs, C = Math.round(I.constructionYears), H = Math.round(I.holdYears), r = calc(scen()), cells = '';
+  if (f.unit === 'grid-dd') {
+    var dd = Array.isArray(I.drawdown) && I.drawdown.length === C ? I.drawdown : null;
+    for (var c = 0; c < C; c++) cells += gcell('drawdown', c, 'Construction year ' + (c + 1), dd ? dd[c] : '', fmtNum(100 / C, 1), '%');
+    return '<div class="ygrid">' + cells + '</div><p class="warn" id="w_drawdown"></p>';
+  }
+  var key = f.key, data = I[key] || {};
+  for (var y = 1; y <= H; y++) {
+    var ph = key === 'revOverride' ? fmtNum(r.rows[y - 1] && !r.rows[y - 1].overridden ? r.rows[y - 1].rev : NaN, 0) : '0';
+    if (key === 'revOverride' && r.rows[y - 1] && r.rows[y - 1].overridden) ph = '';
+    cells += gcell(key, y, 'Year ' + y + ' (' + (Math.round(I.openingYear) + y - 1) + ')', data[y], ph, 'juta');
+  }
+  return '<div class="ygrid">' + cells + '</div>' + (key === 'revOverride' ? '<p class="hint">Grey figures show the calculated revenue for that year. <button class="link" data-clear="revOverride">Clear all yearly revenue</button></p>' : '<p class="hint"><button class="link" data-clear="customPrincipal">Clear all</button></p>');
+}
+function gcell(key, idx, label, v, ph, suf) {
+  return '<div class="gc"><label>' + esc(label) + '</label><div class="iw' + (suf === 'juta' ? ' has-pre' : '') + '">' + (suf === 'juta' ? '<span class="pre">Rp</span>' : '') +
+    '<input type="text" inputmode="decimal" data-grid="' + key + '" data-idx="' + idx + '" value="' + esc(v === undefined || v === null || v === '' ? '' : fmtInput(Number(v))) + '" placeholder="' + esc(ph) + '"><span class="suf">' + suf + '</span></div></div>';
+}
+function groupFooter(g) {
+  if (g === 'Development cost') return '<div class="live" id="live-dev"></div>';
+  if (g === 'Rooms' || g === 'Food, drinks and other income') return g === 'Food, drinks and other income' ? '<div class="live" id="live-rev"></div>' : '';
+  if (g === 'Fixed charges and reserve') return '<div class="live" id="live-ops"></div>';
+  if (g === 'Repayment') return '<div class="live" id="live-loan"></div>';
+  if (g === 'Corporate income tax (simplified estimate)') return '<div class="live" id="live-tax"></div>';
+  if (g === 'Selling the hotel at the end') return '<div class="live" id="live-exit"></div>';
+  return '';
+}
+function refreshLive() {
+  var s = scen(), r = calc(s), R = r.res, I = s.inputs, el;
+  // field warnings
+  FIELDS.forEach(function (f) {
+    var w = document.getElementById('w_' + f.key); if (!w || !f.warn) return;
+    var v = I[f.key]; w.textContent = (v === null || v === undefined || !isFinite(v)) ? '' : f.warn(v, I);
+  });
+  var wd = document.getElementById('w_drawdown');
+  if (wd) { var dd = I.drawdown; var t = Array.isArray(dd) && dd.length === Math.round(I.constructionYears) ? dd.reduce(function (a, b) { return a + (Number(b) || 0); }, 0) : 100; wd.textContent = Math.abs(t - 100) > 0.01 ? 'These add up to ' + fmtNum(t, 1) + '%; they will be scaled to 100%.' : ''; }
+  if ((el = document.getElementById('live-dev'))) el.innerHTML = kv([['Contingency', money(R.contingency)], ['Development cost before land', money(R.devCost - Math.max(0, Number(I.land) || 0))], ['Total development cost', '<b>' + money(R.devCost) + '</b>'], ['Interest during construction (estimate)', money(R.idcTotal)], ['Cost per room', I.rooms > 0 ? money(R.devCost / I.rooms) : '\u2014']]);
+  if ((el = document.getElementById('live-rev'))) { var r1 = r.rows[0], r3 = r.rows[Math.min(2, r.H - 1)]; el.innerHTML = kv([['Revenue in year 1', money(r1.rev)], ['Revenue in year ' + r3.y, '<b>' + money(r3.rev) + '</b>'], ['Rooms share of revenue (year ' + r3.y + ')', pct(r3.rev ? r3.roomsRev / r3.rev : null)], ['Revenue per available room per night (year ' + r3.y + ')', I.rooms > 0 ? 'Rp ' + fmtNum(r3.roomsRev * 1e6 / (I.rooms * (I.daysOpen || 365)), 0) : '\u2014']]); }
+  if ((el = document.getElementById('live-ops'))) { var o = r.rows[Math.min(2, r.H - 1)]; el.innerHTML = '<div class="mini-pl">' + kv([['Total revenue (year ' + o.y + ')', money(o.rev)], ['Gross operating profit', money(o.gop) + ' <span class="mut">' + pct(o.rev ? o.gop / o.rev : null) + '</span>'], ['Operator fees', money(-o.fees)], ['Operating profit (EBITDA)', '<b>' + money(o.ebitda) + '</b> <span class="mut">' + pct(o.rev ? o.ebitda / o.rev : null) + '</span>'], ['Net operating income after reserve', money(o.noi)]]) + '</div>'; }
+  if ((el = document.getElementById('live-loan'))) el.innerHTML = kv([['Loan drawn for construction', money(R.loanTarget)], ['Loan balance at opening', '<b>' + money(R.loanAtOpening) + '</b>'], ['Your equity for construction', money(R.equityInvested)], ['Lowest debt service coverage', '<span class="' + (R.dscrMin !== null && R.dscrMin < 1.3 ? 'bad' : '') + '">' + (R.dscrMin === null ? '\u2014' : fmtNum(R.dscrMin, 2)) + '</span>'], ['Loan repaid from the sale', money(R.loanRepaidAtExit)]]);
+  if ((el = document.getElementById('live-tax'))) el.innerHTML = kv([['Total corporate income tax over ' + r.H + ' years', '<b>' + money(R.totalTax) + '</b>'], ['Tax depreciation, year 1', money(r.rows[0].dep)], ['Tax losses lost after 5 years', money(r.expiredLosses)]]);
+  if ((el = document.getElementById('live-exit'))) el.innerHTML = I.exitMode === 'hold' ? kv([['Sale', 'None: the hotel\u2019s value and remaining loan are left out']]) : kv([['Sale price at end of year ' + r.H, '<b>' + money(R.salePrice) + '</b>'], ['Selling costs and final tax', money(-(R.sellingCosts + R.saleTax))], ['Loan repaid from the sale', money(-R.loanRepaidAtExit)], ['Net to you from the sale', '<b>' + money(R.netToEquityAtExit) + '</b>']]);
+  // grid placeholders for override
+  document.querySelectorAll('input[data-grid="revOverride"]').forEach(function (inp) { var y = +inp.getAttribute('data-idx'), row = r.rows[y - 1]; if (row) inp.placeholder = (I.revOverride && I.revOverride[y] !== undefined && I.revOverride[y] !== '') ? '' : fmtNum(row.rev, 0); });
+}
+function kv(pairs) { return '<dl class="kv">' + pairs.map(function (p) { return '<div><dt>' + p[0] + '</dt><dd>' + p[1] + '</dd></div>'; }).join('') + '</dl>'; }
+
+/* ---------- summary panel ---------- */
+function exampleCount(s) { return Object.keys(s.src).filter(function (k) { return s.src[k] === 'ex' || s.src[k] === 'old'; }).length; }
+function renderSummary() {
+  var s = scen(), r = calc(s), R = r.res, el = document.getElementById('summary'), dr = s.inputs.discountRate;
+  var ex = exampleCount(s);
+  var h = '<div class="sum-head"><span class="sum-label">Live results</span><span class="sum-scn">' + esc(s.name) + '</span></div>';
+  h += '<div class="metric big"><span>Return on your equity<br><small>internal rate of return, after tax</small></span><b class="' + (R.equityIRR === null || R.equityIRR < (dr / 100) ? 'bad' : 'good') + '">' + pct(R.equityIRR) + '</b></div>';
+  h += metric('Project return before financing', pct(R.projectIRR), 'internal rate of return, after tax');
+  h += metric('Net present value of your equity', money(R.npvEquity), 'at ' + fmtNum(dr, 1) + '% discount rate', R.npvEquity < 0 ? 'bad' : 'good');
+  h += metric('Payback after opening', yrs(R.paybackSimple), 'from operating cash, excluding the sale');
+  h += metric('Equity multiple', mult(R.equityMultiple), 'cash back \u00f7 cash put in');
+  h += metric('Lowest debt service coverage', R.dscrMin === null ? 'No loan' : fmtNum(R.dscrMin, 2), 'banks usually want 1,30 or more', R.dscrMin !== null && R.dscrMin < 1.3 ? 'bad' : '');
+  h += '<div class="sum-sep"></div>';
+  h += metric('Total development cost', money(R.devCost));
+  h += metric('Your equity needed (peak)', money(R.peakEquity));
+  h += metric('Operating profit (EBITDA), year ' + Math.min(3, r.H), money(R.stabilisedEbitda));
+  if (r.warnings.length) h += '<ul class="warns">' + r.warnings.map(function (w) { return '<li class="' + w.level + '">' + esc(w.text) + '</li>'; }).join('') + '</ul>';
+  if (ex) h += '<div class="ex-count">' + ex + ' input' + (ex > 1 ? 's are' : ' is') + ' still marked as examples. Replace or confirm them before relying on these results.</div>';
+  h += '<button class="btn primary full" data-step="results">See full results</button>';
+  el.innerHTML = h;
+}
+function metric(label, val, sub, cls) { return '<div class="metric"><span>' + label + (sub ? '<br><small>' + sub + '</small>' : '') + '</span><b class="' + (cls || '') + '">' + val + '</b></div>'; }
+
+/* ---------- results ---------- */
+function renderResults() {
+  var s = scen(), r = calc(s), R = r.res, I = s.inputs, dr = I.discountRate, h = '';
+  var ex = exampleCount(s);
+  if (ex) h += '<div class="note-box">' + ex + ' input' + (ex > 1 ? 's' : '') + ' in this scenario are still examples (marked \u201cExample \u2014 please check\u201d). These results are only as good as those figures.</div>';
+  h += '<div class="cards">' +
+    card('Return on your equity', pct(R.equityIRR), 'Internal rate of return on your own money, after tax and loan payments', R.equityIRR !== null && R.equityIRR >= dr / 100 ? 'good' : 'bad') +
+    card('Project return before financing', pct(R.projectIRR), 'Internal rate of return on the whole project, after tax, as if there were no loan') +
+    card('Net present value of your equity', money(R.npvEquity), 'At a ' + fmtNum(dr, 1) + '% discount rate. Above zero means it beats that return.', R.npvEquity >= 0 ? 'good' : 'bad') +
+    card('Net present value of the project', money(R.npvProject), 'Before financing, at ' + fmtNum(dr, 1) + '%') +
+    card('Payback after opening', yrs(R.paybackSimple), 'When operating cash repays your equity, excluding any sale. Discounted: ' + yrs(R.paybackDiscounted)) +
+    card('Equity multiple', mult(R.equityMultiple), 'Total cash back to you, including the sale, divided by the cash you put in') +
+    card('Cash-on-cash yield', pct(R.cocStabilised), 'Year ' + Math.min(3, r.H) + ' cash to you \u00f7 equity invested. Average over all years: ' + pct(R.cocAvg)) +
+    card('Debt service coverage', R.dscrMin === null ? 'No loan' : fmtNum(R.dscrMin, 2) + ' lowest', R.dscrAvg === null ? '' : 'Average ' + fmtNum(R.dscrAvg, 2) + '. Banks usually want at least 1,30.', R.dscrMin !== null && R.dscrMin < 1.3 ? 'bad' : '') +
+    card('Total development cost', money(R.devCost), 'Plus interest during construction of ' + money(R.idcTotal)) +
+    card('Your equity needed', money(R.peakEquity), 'Peak cash you must put in, including any early operating shortfalls') +
+    card('Yield on cost', pct(R.yieldOnCost), 'Year ' + Math.min(3, r.H) + ' net operating income \u00f7 development cost') +
+    card('Sale at end of year ' + r.H, I.exitMode === 'hold' ? 'No sale' : money(R.salePrice), I.exitMode === 'hold' ? 'Value and remaining loan left out' : 'Net to you after costs, tax and loan: ' + money(R.netToEquityAtExit)) +
+    '</div>';
+  if (r.warnings.length) h += '<ul class="warns wide">' + r.warnings.map(function (w) { return '<li class="' + w.level + '">' + esc(w.text) + '</li>'; }).join('') + '</ul>';
+  var labels = periodLabels(r, I);
+  h += '<div class="charts">';
+  var cumOp = [], co = 0; r.equityOpCF.forEach(function (v) { co += v; cumOp.push(co); });
+  h += '<div class="chart-card full"><h3>Cash to and from you each year <span class="mut">(operating years, before any sale)</span></h3>' + svgChart({ labels: labels, build: r.C, h: 230, bars: [{ name: 'Cash to you', color: '#34C759', neg: '#FF3B30', negName: 'Cash you put in', values: r.equityOpCF }], lines: [{ name: 'Your cumulative cash (payback when it crosses zero)', color: '#5856D6', values: cumOp }] }) +
+    '<p class="mut chart-cap">' + (I.exitMode === 'hold' ? 'No sale is assumed.' : 'Not shown: selling the hotel at the end of ' + labels[r.T - 1] + ' brings you a further ' + money(R.netToEquityAtExit) + ' after selling costs, final tax and repaying the loan.') + '</p></div>';
+  var opL = labels.slice(r.C);
+  h += '<div class="chart-card"><h3>Revenue and profit</h3>' + svgChart({ labels: opL, w: 420, h: 250, lines: [{ name: 'Total revenue', color: '#007AFF', values: r.rows.map(function (x) { return x.rev; }) }, { name: 'Gross operating profit', color: '#34C759', values: r.rows.map(function (x) { return x.gop; }) }, { name: 'Operating profit (EBITDA)', color: '#5856D6', values: r.rows.map(function (x) { return x.ebitda; }), dash: true }] }) + '</div>';
+  h += '<div class="chart-card"><h3>Loan balance at year end <span class="mut">(before any repayment from the sale)</span></h3>' + svgChart({ labels: labels, w: 420, h: 250, build: r.C, bars: [{ name: 'Loan balance', color: '#8E8E93', values: r.close.map(function (v, t) { return t === r.T - 1 ? v + r.exitRepay[t] : v; }) }] }) + '</div>';
+  h += '</div>';
+  // tables
+  var tabs = [['ops', 'Revenue and operations'], ['loan', 'Loan'], ['tax', 'Tax'], ['cash', 'Cash flow']];
+  h += '<section class="card"><div class="tbl-head"><h2>Year by year</h2><span class="mut">All figures in Rp juta (millions of rupiah)</span></div><div class="tabs">' + tabs.map(function (t) { return '<button class="tab' + (tableTab === t[0] ? ' active' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div><div class="tbl-wrap">' + yearTable(r, I, labels) + '</div></section>';
+  h += '<details class="card how"><summary>How these figures are calculated</summary><ul>' +
+    '<li>Money is in Rp juta (millions of rupiah); headline figures above 1.000 juta are shown in miliar (1 miliar = 1.000 juta).</li>' +
+    '<li>All cash flows fall at the end of each year. The first construction year is year 0 and is not discounted.</li>' +
+    '<li>Revenue = rooms \u00d7 days \u00d7 occupancy \u00d7 average daily rate, plus food and drink and other income. Gross operating profit = revenue \u2212 departmental costs \u2212 overheads. Operating profit (EBITDA) = gross operating profit \u2212 operator fees \u2212 insurance and land and building tax.</li>' +
+    '<li>Interest is charged on the loan balance at the start of each year. Equal instalments use the standard annuity formula on the balance at the end of the interest-only period.</li>' +
+    '<li>Tax (simplified estimate, not tax advice): 22% of operating profit (EBITDA), minus interest (only on debt up to 4 times equity), minus depreciation (building, fees and contingency over 20 years including capitalised interest; furniture over 4 or 8 years; replacement furniture bought from the reserve over 4 years; pre-opening over 4 years; land not depreciated). The reserve itself is not deducted when it is set aside. Losses carry forward 5 years. ' + (I.deductPrincipal ? '<b>This scenario also deducts loan principal' + (I.deductDepreciation === true ? ' as well as depreciation' : ' instead of depreciation') + ', which is not the standard treatment.</b>' : 'Loan principal is not deductible (the old calculator deducted it, which understated tax).') + '</li>' +
+    '<li>The sale price is the final year\u2019s net operating income divided by the exit yield, less selling costs and the 2,5% final tax on land and buildings. Any remaining loan is repaid from the sale.</li>' +
+    '<li>Payback uses operating cash only, so it does not rely on selling the hotel. Value-added tax, dividend tax, working capital and refurbishment beyond the reserve are not modelled.</li></ul></details>';
+  return h;
+}
+function card(t, v, sub, cls) { return '<div class="rcard"><div class="rt">' + t + '</div><div class="rv ' + (cls || '') + '">' + v + '</div><div class="rs">' + sub + '</div></div>'; }
+function periodLabels(r, I) { var L = [], oy = Math.round(I.openingYear); for (var t = 0; t < r.T; t++) L.push(String(oy + t - r.C)); return L; }
+function yearTable(r, I, labels) {
+  var cols, rowsHtml = '', oy = Math.round(I.openingYear);
+  function yl(t) { return t < r.C ? 'Construction ' + (t + 1) + ' <span class="mut">' + (oy - r.C + t) + '</span>' : 'Year ' + (t - r.C + 1) + ' <span class="mut">' + (oy + t - r.C) + '</span>'; }
+  var ops = r.rows;
+  if (tableTab === 'ops') {
+    cols = ['Year', 'Occupancy', 'Average daily rate (Rp)', 'Total revenue', 'Gross operating profit', 'Operator fees', 'Operating profit (EBITDA)', 'Replacement reserve', 'Net operating income'];
+    ops.forEach(function (x) { rowsHtml += '<tr><td>' + yl(x.t) + (x.overridden ? ' <span class="tag">your figure</span>' : '') + '</td><td>' + pct(x.occ, 0) + '</td><td>' + tbl(x.adr) + '</td><td>' + tbl(x.rev) + '</td><td>' + tbl(x.gop) + '</td><td>' + tbl(-x.fees) + '</td><td class="b">' + tbl(x.ebitda) + '</td><td>' + tbl(-x.reserve) + '</td><td class="b">' + tbl(x.noi) + '</td></tr>'; });
+  } else if (tableTab === 'loan') {
+    cols = ['Year', 'Loan drawn', 'Interest', 'Principal repaid', 'Debt service', 'Loan balance at year end', 'Debt service coverage'];
+    for (var t = 0; t < r.T; t++) {
+      var x = t >= r.C ? ops[t - r.C] : null, prin = r.principal[t] + r.exitRepay[t];
+      rowsHtml += '<tr><td>' + yl(t) + '</td><td>' + tbl(r.draw[t]) + '</td><td>' + tbl(-r.interest[t]) + (t < r.C && r.interest[t] > 0 ? ' <span class="tag">' + (I.idcMode === 'pay' ? 'paid' : 'added') + '</span>' : '') + '</td><td>' + tbl(-prin) + (r.exitRepay[t] > 0.5 ? ' <span class="tag">from sale</span>' : '') + '</td><td>' + (x ? tbl(-x.debtService) : '\u2013') + '</td><td>' + tbl(r.close[t]) + '</td><td class="' + (x && x.dscr !== null && x.dscr < 1.3 ? 'bad' : '') + '">' + (x && x.dscr !== null ? fmtNum(x.dscr, 2) : '\u2013') + '</td></tr>';
+    }
+  } else if (tableTab === 'tax') {
+    cols = ['Year', 'Operating profit (EBITDA)', 'Interest deducted', 'Depreciation deducted', 'Principal deducted', 'Taxable before losses', 'Losses used', 'Corporate income tax', 'Losses carried forward'];
+    ops.forEach(function (x) { rowsHtml += '<tr><td>' + yl(x.t) + '</td><td>' + tbl(x.ebitda) + '</td><td>' + tbl(-x.interestDeducted) + '</td><td>' + tbl(-x.depDeducted) + '</td><td>' + tbl(-x.principalDeducted) + '</td><td>' + tbl(x.taxableBefore) + '</td><td>' + tbl(x.lossesUsed) + '</td><td class="b">' + tbl(-x.tax) + '</td><td>' + tbl(x.lossesAvailable) + '</td></tr>'; });
+  } else {
+    cols = ['Year', 'Development spending', 'Project cash flow (before financing)', 'Your equity put in', 'Your cash flow', 'Your cumulative cash', 'Cash-on-cash yield'];
+    for (var t2 = 0; t2 < r.T; t2++) {
+      var xx = t2 >= r.C ? ops[t2 - r.C] : null;
+      rowsHtml += '<tr><td>' + yl(t2) + (t2 === r.T - 1 && I.exitMode !== 'hold' ? ' <span class="tag">includes sale</span>' : '') + '</td><td>' + tbl(-r.spend[t2]) + '</td><td>' + tbl(r.projectCF[t2]) + '</td><td>' + tbl(r.equityIn[t2]) + '</td><td class="b">' + tbl(r.equityCF[t2]) + '</td><td>' + tbl(r.cumEquity[t2]) + '</td><td>' + (xx ? pct(xx.coc) : '\u2013') + '</td></tr>';
+    }
+  }
+  return '<table class="yt"><thead><tr>' + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('') + '</tr></thead><tbody>' + rowsHtml + '</tbody></table>';
+}
+
+/* ---------- SVG charts ---------- */
+function niceStep(range) { var raw = range / 5, mag = Math.pow(10, Math.floor(Math.log10(raw || 1))), n = raw / mag; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag; }
+function svgChart(o) {
+  var W = o.w || 640, Hh = o.h || 240, L = 44, Rr = 8, T = 22, B = 26, labels = o.labels, n = labels.length, all = [0];
+  (o.bars || []).forEach(function (b) { all = all.concat(b.values); }); (o.lines || []).forEach(function (l) { all = all.concat(l.values); });
+  all = all.map(function (v) { return v / 1000; }); // to miliar
+  var mn = Math.min.apply(null, all), mx = Math.max.apply(null, all); if (mx - mn < 1e-9) mx = mn + 1;
+  var st = niceStep(mx - mn); mn = Math.floor(mn / st) * st; mx = Math.ceil(mx / st) * st;
+  var pw = W - L - Rr, ph = Hh - T - B, bw = pw / n;
+  function y(v) { return T + ph - (v / 1000 - mn) / (mx - mn) * ph; }
+  function x(i) { return L + bw * (i + 0.5); }
+  var s = '<svg viewBox="0 0 ' + W + ' ' + Hh + '" class="chart" role="img">';
+  if (o.build) s += '<rect x="' + L + '" y="' + T + '" width="' + (bw * o.build) + '" height="' + ph + '" class="buildzone" fill="#F2F2F7"/>' + (W < 500 ? '' : '<text x="' + (L + bw * o.build / 2) + '" y="' + (T + 11) + '" class="ax" text-anchor="middle">construction</text>');
+  for (var g = mn; g <= mx + 1e-9; g += st) { var gy = T + ph - (g - mn) / (mx - mn) * ph; s += '<line x1="' + L + '" x2="' + (W - Rr) + '" y1="' + gy + '" y2="' + gy + '" class="' + (Math.abs(g) < 1e-9 ? 'zero' : 'grid') + '"/><text x="' + (L - 6) + '" y="' + (gy + 4) + '" class="ax" text-anchor="end">' + fmtNum(g, st < 1 ? 1 : 0) + '</text>'; }
+  s += '<text x="2" y="11" class="ax unit">Rp miliar</text>';
+  var every = Math.ceil(n / (W < 500 ? 7 : 12));
+  labels.forEach(function (lb, i) { if (i % every === 0) s += '<text x="' + x(i) + '" y="' + (Hh - 8) + '" class="ax" text-anchor="middle">' + esc(lb) + '</text>'; });
+  (o.bars || []).forEach(function (b, bi) {
+    var nb = o.bars.length, w = Math.max(2, bw * 0.62 / nb);
+    b.values.forEach(function (v, i) { var y0 = y(0), y1 = y(v), bx = x(i) - (w * nb) / 2 + w * bi; s += '<rect x="' + bx + '" y="' + Math.min(y0, y1) + '" width="' + w + '" height="' + Math.max(0.5, Math.abs(y1 - y0)) + '" rx="2" fill="' + (v < 0 && b.neg ? b.neg : b.color) + '"><title>' + esc(labels[i] + ': ' + money(v)) + '</title></rect>'; });
+  });
+  (o.lines || []).forEach(function (l) {
+    var d = l.values.map(function (v, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1); }).join(' ');
+    s += '<path d="' + d + '" fill="none" stroke="' + l.color + '" stroke-width="2.2"' + (l.dash ? ' stroke-dasharray="6 4"' : '') + '/>';
+    l.values.forEach(function (v, i) { s += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="2.6" class="pt" fill="' + l.color + '"><title>' + esc(l.name + ', ' + labels[i] + ': ' + money(v)) + '</title></circle>'; });
+  });
+  s += '</svg><div class="legend">' + (o.bars || []).map(function (b) { return '<span><i style="background:' + b.color + '"></i>' + esc(b.name) + '</span>' + (b.neg ? '<span><i style="background:' + b.neg + '"></i>' + esc(b.negName || 'Money in') + '</span>' : ''); }).join('') + (o.lines || []).map(function (l) { return '<span><i class="ln' + (l.dash ? ' dash' : '') + '" style="border-color:' + l.color + '"></i>' + esc(l.name) + '</span>'; }).join('') + '</div>';
+  return s;
+}
+
+/* ---------- compare ---------- */
+function renderCompare() {
+  var S = project.scenarios, rs = S.map(calc);
+  var rows = [
+    ['Total development cost', function (r) { return money(r.res.devCost); }],
+    ['Loan at opening', function (r) { return money(r.res.loanAtOpening); }],
+    ['Your equity needed (peak)', function (r) { return money(r.res.peakEquity); }],
+    ['Number of rooms', function (r, s) { return fmtNum(s.inputs.rooms, 0); }],
+    ['Average daily rate, opening year', function (r, s) { return 'Rp ' + fmtNum(s.inputs.adr, 0); }],
+    ['Occupancy from year 3', function (r, s) { return fmtNum(s.inputs.occStab, 1) + '%'; }],
+    ['Revenue, year 3', function (r) { return money(r.res.stabilisedRevenue); }],
+    ['Operating profit (EBITDA), year 3', function (r) { return money(r.res.stabilisedEbitda); }],
+    ['Yield on cost', function (r) { return pct(r.res.yieldOnCost); }],
+    ['Return on your equity (internal rate of return)', function (r) { return '<b>' + pct(r.res.equityIRR) + '</b>'; }],
+    ['Project return before financing', function (r) { return pct(r.res.projectIRR); }],
+    ['Net present value of your equity', function (r) { return money(r.res.npvEquity); }],
+    ['Payback after opening', function (r) { return yrs(r.res.paybackSimple); }],
+    ['Discounted payback', function (r) { return yrs(r.res.paybackDiscounted); }],
+    ['Equity multiple', function (r) { return mult(r.res.equityMultiple); }],
+    ['Cash-on-cash yield, year 3', function (r) { return pct(r.res.cocStabilised); }],
+    ['Lowest debt service coverage', function (r) { return r.res.dscrMin === null ? '\u2014' : '<span class="' + (r.res.dscrMin < 1.3 ? 'bad' : '') + '">' + fmtNum(r.res.dscrMin, 2) + '</span>'; }],
+    ['Sale price', function (r, s) { return s.inputs.exitMode === 'hold' ? 'No sale' : money(r.res.salePrice); }],
+    ['Inputs still marked as examples', function (r, s) { return String(exampleCount(s)); }]
+  ];
+  var h = '<section class="card"><div class="tbl-wrap"><table class="yt cmp"><thead><tr><th></th>' + S.map(function (s) { return '<th>' + esc(s.name) + (s.id === project.activeScenario ? ' <span class="tag">open</span>' : '') + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    rows.map(function (row) { return '<tr><td>' + row[0] + '</td>' + S.map(function (s, i) { return '<td>' + row[1](rs[i], s) + '</td>'; }).join('') + '</tr>'; }).join('') +
+    '<tr><td></td>' + S.map(function (s) { return '<td><button class="link" data-open-scn="' + s.id + '">Open</button></td>'; }).join('') + '</tr></tbody></table></div></section>';
+  h += '<p class="mut">Add a scenario with \u201cDuplicate\u201d at the top, then change its inputs. Every scenario is saved in this project and in the project file.</p>';
+  return h;
+}
+
+/* ---------- events ---------- */
+function setInput(key, val) { var s = scen(); s.inputs[key] = val; delete s.src[key]; persist(true); }
+function onInput(e) {
+  var t = e.target, s = scen();
+  if (t.dataset.key) {
+    var f = FIELD[t.dataset.key];
+    if (f.unit === 'select' || f.unit === 'check') return;
+    var v = parseNum(t.value), w = document.getElementById('w_' + f.key);
+    if (v === null || isNaN(v)) { if (w) w.textContent = v === null ? 'Enter a number.' : 'That is not a number.'; return; }
+    if (v < 0 && !f.allowNeg) { if (w) w.textContent = 'Cannot be negative.'; return; }
+    if (f.max !== undefined && v > f.max) { if (w) w.textContent = 'The most allowed is ' + fmtNum(f.max, 0) + '.'; return; }
+    if (f.min !== undefined && v < f.min && f.unit !== 'pct' && f.unit !== 'juta') { if (w) w.textContent = 'The least allowed is ' + fmtNum(f.min, 0) + '.'; return; }
+    var hadBadge = !!s.src[f.key];
+    setInput(f.key, v); afterChange(f.key === 'constructionYears' || f.key === 'holdYears' || f.key === 'openingYear');
+    if (hadBadge) { var lab = t.closest('.field').querySelector('.badge'); if (lab) lab.remove(); }
+  } else if (t.dataset.grid) {
+    var key = t.dataset.grid, idx = +t.dataset.idx, raw = t.value.trim(), val = raw === '' ? '' : parseNum(raw);
+    if (val !== '' && (isNaN(val) || val < 0)) return;
+    if (key === 'drawdown') {
+      var C = Math.round(s.inputs.constructionYears), dd = Array.isArray(s.inputs.drawdown) && s.inputs.drawdown.length === C ? s.inputs.drawdown.slice() : [];
+      if (dd.length !== C) for (var c = 0; c < C; c++) dd[c] = 100 / C;
+      dd[idx] = val === '' ? 0 : val; setInput('drawdown', dd);
+    } else {
+      var o = Object.assign({}, s.inputs[key] || {}); if (val === '') delete o[idx]; else o[idx] = val; setInput(key, o);
+    }
+    afterChange(false);
+  }
+}
+function afterChange(regrid) { renderSummary(); refreshLive(); if (regrid) { /* grids depend on years */ document.querySelectorAll('.field.full').forEach(function () {}); } }
+function onChange(e) {
+  var t = e.target;
+  if (t.id === 'scenario-select') { project.activeScenario = t.value; persist(false); renderAll(); return; }
+  if (t.id === 'adv-toggle') { advanced = t.checked; persist(false); renderStep(); return; }
+  if (t.id === 'file-input') { importFile(t.files[0]); t.value = ''; return; }
+  if (t.dataset.key) {
+    var f = FIELD[t.dataset.key];
+    if (f.unit === 'select') { setInput(f.key, t.value); renderStep(); renderSummary(); }
+    else if (f.unit === 'check') { setInput(f.key, t.checked); renderStep(); renderSummary(); }
+    else if (['constructionYears', 'holdYears', 'openingYear'].indexOf(f.key) >= 0) { renderStep(); }
+  }
+}
+function onBlur(e) {
+  var t = e.target;
+  if (t.dataset && t.dataset.key && FIELD[t.dataset.key] && FIELD[t.dataset.key].unit !== 'select' && FIELD[t.dataset.key].unit !== 'check') {
+    var v = scen().inputs[t.dataset.key]; t.value = fmtInput(v, FIELD[t.dataset.key]); var w = document.getElementById('w_' + t.dataset.key); if (w) refreshLive();
+  } else if (t.dataset && t.dataset.grid) { var v2 = parseNum(t.value); if (v2 !== null && !isNaN(v2)) t.value = fmtInput(v2); }
+}
+function onClick(e) {
+  var t = e.target.closest('button,[data-step]'); if (!t) return;
+  if (t.dataset.step) { step = t.dataset.step; renderAll(); window.scrollTo(0, 0); document.getElementById('main').scrollTop = 0; return; }
+  if (t.dataset.help) { var p = document.getElementById('h_' + t.dataset.help); if (p) p.hidden = !p.hidden; return; }
+  if (t.dataset.confirm) { delete scen().src[t.dataset.confirm]; persist(true); t.remove(); renderSummary(); return; }
+  if (t.dataset.tab) { tableTab = t.dataset.tab; renderStep(); return; }
+  if (t.dataset.clear) { setInput(t.dataset.clear, {}); renderStep(); renderSummary(); return; }
+  if (t.dataset.openScn) { project.activeScenario = t.dataset.openScn; persist(false); step = 'project'; renderAll(); return; }
+  var a = t.dataset.action; if (!a) return;
+  if (a === 'save-file') saveFile();
+  if (a === 'open-file') document.getElementById('file-input').click();
+  if (a === 'excel') exportExcel();
+  if (a === 'projects') showProjects();
+  if (a === 'dup') { var src = scen(), c = clone(src); c.id = uid('s'); c.name = src.name + ' (copy)'; project.scenarios.push(c); project.activeScenario = c.id; persist(true); renderAll(); }
+  if (a === 'rename-scn') ask('Rename scenario', scen().name).then(function (n) { if (n) { scen().name = n; persist(true); renderAll(); } });
+  if (a === 'rename-proj') ask('Rename project', project.name).then(function (n) { if (n) { project.name = n; persist(true); renderAll(); } });
+  if (a === 'del-scn') {
+    if (project.scenarios.length < 2) { message('Cannot delete', 'A project needs at least one scenario.'); return; }
+    confirmBox('Delete scenario?', 'Delete \u201c' + scen().name + '\u201d? This cannot be undone (unless you saved a project file).').then(function (ok) { if (!ok) return; var id = project.activeScenario; project.scenarios = project.scenarios.filter(function (s) { return s.id !== id; }); project.activeScenario = project.scenarios[0].id; persist(true); renderAll(); });
+  }
+}
+
+/* ---------- dialogs ---------- */
+function modal(title, body, buttons) {
+  return new Promise(function (resolve) {
+    var ov = document.getElementById('modal'); ov.innerHTML = '<div class="mbox"><h3>' + esc(title) + '</h3><div class="mbody">' + body + '</div><div class="mbtns">' + buttons.map(function (b, i) { return '<button class="btn ' + (b.cls || 'ghost') + '" data-i="' + i + '">' + esc(b.text) + '</button>'; }).join('') + '</div></div>';
+    ov.hidden = false; var inp = ov.querySelector('input'); if (inp) { inp.focus(); inp.select(); }
+    function done(v) { ov.hidden = true; ov.innerHTML = ''; ov.onclick = null; resolve(v); }
+    ov.onclick = function (e) { var b = e.target.closest('[data-i]'); if (b) done(buttons[+b.dataset.i].value(ov)); else if (e.target === ov) done(null); var pb = e.target.closest('[data-proj]'); if (pb) done({ proj: pb.dataset.proj, act: pb.dataset.act }); };
+    if (inp) inp.onkeydown = function (e) { if (e.key === 'Enter') done(inp.value.trim()); if (e.key === 'Escape') done(null); };
+  });
+}
+function ask(title, def) { return modal(title, '<input class="minput" type="text" value="' + esc(def) + '">', [{ text: 'Cancel', value: function () { return null; } }, { text: 'Save', cls: 'primary', value: function (ov) { return ov.querySelector('input').value.trim(); } }]); }
+function confirmBox(title, msg) { return modal(title, '<p>' + esc(msg) + '</p>', [{ text: 'Cancel', value: function () { return false; } }, { text: 'Delete', cls: 'danger', value: function () { return true; } }]); }
+function message(title, msg) { return modal(title, '<p>' + msg + '</p>', [{ text: 'OK', cls: 'primary', value: function () { return true; } }]); }
+function showProjects() {
+  var ids = Object.keys(lib.projects).sort(function (a, b) { return (lib.projects[b].updatedAt || 0) - (lib.projects[a].updatedAt || 0); });
+  var body = '<p class="mut">Projects saved in this browser on this computer. Use \u201cSave project file\u201d to keep a safe copy.</p><div class="plist">' + ids.map(function (id) {
+    var p = lib.projects[id]; return '<div class="prow"><div><b>' + esc(p.name) + '</b>' + (id === project.id ? ' <span class="tag">open</span>' : '') + '<br><span class="mut">' + p.scenarios.length + ' scenario' + (p.scenarios.length > 1 ? 's' : '') + ' \u00b7 updated ' + new Date(p.updatedAt).toLocaleString('en-GB') + '</span></div><div><button class="btn ghost sm" data-proj="' + id + '" data-act="open">Open</button>' + (id === project.id ? '' : '<button class="btn ghost sm danger-t" data-proj="' + id + '" data-act="del">Delete</button>') + '</div></div>';
+  }).join('') + '</div>';
+  modal('Projects', body, [{ text: 'Close', value: function () { return null; } }, { text: 'Load the example project', value: function () { return 'starter'; } }, { text: 'New blank project', cls: 'primary', value: function () { return 'new'; } }]).then(function (v) {
+    if (!v) return;
+    if (v === 'new') { ask('Name the new project', 'New hotel project').then(function (n) { if (n === null) return; openProjectObj(blankProject(n || 'New hotel project')); }); return; }
+    if (v === 'starter') { openProjectObj(starterProject()); return; }
+    if (v.act === 'open') openProjectObj(lib.projects[v.proj]);
+    if (v.act === 'del') confirmBox('Delete project?', 'Delete \u201c' + lib.projects[v.proj].name + '\u201d from this browser? This cannot be undone.').then(function (ok) { if (ok) { delete lib.projects[v.proj]; persist(false); } showProjects(); });
+  });
+}
+
+/* ---------- files ---------- */
+function download(name, blob) {
+  // On iPhone and iPad, use the share sheet (Save to Files, AirDrop, Mail); otherwise a normal download.
+  try {
+    var file = typeof File === 'function' ? new File([blob], name, { type: blob.type }) : null;
+    if (file && navigator.canShare && navigator.share && navigator.canShare({ files: [file] }) && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document) {
+      navigator.share({ files: [file], title: name }).catch(function (e) { if (!e || e.name !== 'AbortError') downloadLink(name, blob); });
+      return;
+    }
+  } catch (e) { /* fall back to a download link */ }
+  downloadLink(name, blob);
+}
+function downloadLink(name, blob) {
+  var url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+}
+function safeName(s) { return String(s).replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'project'; }
+function stamp() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function saveFile() {
+  project.savedAt = Date.now();
+  download('Hotel-ROI-' + safeName(project.name) + '-' + stamp() + '.json', new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' }));
+  savedToFile = true; persist(false);
+}
+function importFile(file) {
+  if (!file) return;
+  var rd = new FileReader();
+  rd.onload = function () {
+    var d; try { d = JSON.parse(rd.result); } catch (e) { message('Could not open the file', 'This does not look like a project file.'); return; }
+    if (d && d.app === 'hotel-roi-calculator' && Array.isArray(d.scenarios) && d.scenarios.length) {
+      var existing = lib.projects[d.id];
+      var go = function () { openProjectObj(d); savedToFile = true; renderSaveState(); };
+      if (existing && existing.updatedAt > (d.updatedAt || 0) + 1000) {
+        modal('A newer copy is in this browser', '<p>This browser has a copy of \u201c' + esc(d.name) + '\u201d that was changed after the file was saved.</p>', [{ text: 'Keep the browser copy', value: function () { return 'keep'; } }, { text: 'Open the file as a separate copy', value: function () { return 'copy'; } }, { text: 'Replace with the file', cls: 'primary', value: function () { return 'replace'; } }]).then(function (v) {
+          if (v === 'replace') go(); else if (v === 'copy') { d.id = uid('p'); d.name += ' (from file)'; go(); } else if (v === 'keep') openProjectObj(existing);
+        });
+      } else go();
+    } else if (d && d.params) { openProjectObj(fromOldFormat(d)); savedToFile = false; renderSaveState(); }
+    else message('Could not open the file', 'This file is not a hotel return on investment project.');
+  };
+  rd.readAsText(file);
+}
+
+/* Excel export: Inputs (named cells), Annual cash flow (formulas), Results summary (formulas + app values), Scenario comparison (values). */
+function optText(key, code) { var f = FIELD[key], o = f.options.filter(function (x) { return x[0] === code; })[0]; return o ? o[1] : code; }
+function q(s) { return '"' + String(s).replace(/"/g, '""') + '"'; }
+function buildWorkbook(project, s) {
+  var I = s.inputs, r = HotelModel.run(I), R = r.res, C = r.C, T = r.T, H = r.H, col = MiniXlsx.colName;
+  var names = [], AN = "'Annual cash flow'";
+  // ---------- Inputs sheet
+  var inRows = [], rowOf = {};
+  inRows.push([{ v: 'Hotel return on investment \u2014 inputs', s: 10 }]);
+  inRows.push(['Project: ' + project.name + '   \u00b7   Scenario: ' + s.name + '   \u00b7   Exported ' + new Date().toLocaleString('en-GB')]);
+  inRows.push([{ v: 'Money in Rp juta (millions of rupiah); 1 miliar = 1.000 juta. Blue cells are inputs: change them and the other sheets recalculate. Percentages are stored as fractions (9% = 0,09).', s: 11 }]);
+  inRows.push([{ v: 'Tax is a simplified estimate under Indonesian rules, not tax advice. Cells marked \u201cExample \u2014 please check\u201d are assumed figures, not your data.', s: 11 }]);
+  inRows.push(null);
+  inRows.push([{ v: 'Input', s: 5 }, { v: 'Value', s: 5 }, { v: 'Unit', s: 5 }, { v: 'Status', s: 5 }, { v: 'Name used in formulas', s: 5 }]);
+  var lastGroup = '';
+  FIELDS.forEach(function (f) {
+    if (f.unit.indexOf('grid-') === 0) return;
+    if (f.group !== lastGroup) { inRows.push([{ v: f.group, s: 1 }]); lastGroup = f.group; }
+    var v = I[f.key], cell, unit;
+    if (f.unit === 'select') { cell = { v: optText(f.key, v), s: 12 }; unit = 'choice'; }
+    else if (f.unit === 'check') { cell = { v: v === true ? 'Yes' : 'No', s: 12 }; unit = 'Yes / No'; }
+    else if (f.unit === 'pct') { cell = { v: Number(v) / 100, s: 9 }; unit = f.sfx || '%'; }
+    else { cell = { v: Number(v), s: 8 }; unit = { juta: 'Rp juta', rp: 'Rp per night', years: 'years', rooms: 'rooms', days: 'days', year: 'year' }[f.unit] || ''; }
+    var st = s.src[f.key] === 'ex' ? 'Example \u2014 please check' : s.src[f.key] === 'old' ? 'From old calculator' : (NOT_EXAMPLE[f.key] ? (f.key === 'taxRate' || f.key === 'saleTaxPct' ? 'Indonesian standard rate' : '') : 'Your figure');
+    inRows.push([f.label, cell, unit, st, 'inp_' + f.key]);
+    rowOf[f.key] = inRows.length; names.push({ name: 'inp_' + f.key, ref: 'Inputs!$B$' + inRows.length });
+  });
+  inRows.push(null); inRows.push([{ v: 'Calculated from the inputs', s: 1 }]);
+  var derived = [
+    ['calc_cont', 'Contingency', 'inp_construction*inp_contingencyPct', R.contingency],
+    ['calc_dev', 'Total development cost (before interest during construction)', 'inp_land+inp_construction+calc_cont+inp_ffe+inp_softCosts+inp_preOpening', R.devCost],
+    ['calc_loan', 'Loan drawn for construction', 'IF(inp_loanMode=' + q(optText('loanMode', 'amount')) + ',MIN(inp_loanAmount,calc_dev),calc_dev*MIN(1,inp_ltcPct))', R.loanTarget],
+    ['calc_share', 'Share of each construction payment funded by the loan', 'IF(calc_dev>0,calc_loan/calc_dev,0)', r.loanShare],
+    ['calc_idc', 'Interest during construction', null, R.idcTotal],
+    ['calc_eqinv', 'Equity invested during construction', null, R.equityInvested],
+    ['calc_deddep', 'Depreciation deducted for tax (1 = yes, 0 = no)', 'IF(inp_deductPrincipal="Yes",IF(inp_deductDepreciation="Yes",1,0),1)', I.deductPrincipal && I.deductDepreciation !== true ? 0 : 1]
+  ];
+  var derivedRow = {};
+  derived.forEach(function (d) { inRows.push([d[1], { v: d[3], f: d[2] || 'X', s: d[0] === 'calc_share' ? 3 : (d[0] === 'calc_deddep' ? 0 : 2) }, d[0] === 'calc_share' ? 'share' : 'Rp juta', '', d[0]]); derivedRow[d[0]] = inRows.length; names.push({ name: d[0], ref: 'Inputs!$B$' + inRows.length }); });
+
+  // ---------- Annual sheet
+  var A = [], rowNo = {}, firstCol = 2, lastL = col(firstCol + T - 1);
+  function L(t) { return col(firstCol + t); }
+  function ref(key, t) { return L(t) + rowNo[key]; }
+  function rng(key, from, to) { return '$' + L(from) + '$' + rowNo[key] + ':$' + L(to) + '$' + rowNo[key]; }
+  function opRow(t) { return t >= C ? r.rows[t - C] : null; }
+  var g = I.adrGrowth / 100, days = Number(I.daysOpen) || 365;
+  function unscaled(t) { var x = opRow(t); if (!x) return [0, 0, 0]; var ru = x.nights * x.adr / 1e6, fu = I.fnbMode === 'perRoom' ? x.nights * I.fnbPerRoom * Math.pow(1 + g, x.y - 1) / 1e6 : ru * I.fnbPct / 100; return [ru, fu, ru * I.otherPct / 100]; }
+  var bldgBase = r.bldgBase, ffe = Number(I.ffe), sh = I.ffeShortLifePct / 100, pre = Number(I.preOpening);
+  var exitT = T - 1, opS = function (k) { return function (t) { var x = opRow(t); return x ? x[k] : 0; }; };
+  var defs = [
+    ['sec', 'Timeline'],
+    ['period', 'Period', '', null, function (t) { return t < C ? 'Construction ' + (t + 1) : 'Year ' + (t - C + 1); }, 1],
+    ['cal', 'Calendar year', '', null, function (t) { return Math.round(I.openingYear) - C + t; }, 0],
+    ['op', 'Operating year (0 = construction)', '', null, function (t) { return t < C ? 0 : t - C + 1; }, 0],
+    ['ti', 'Years from start (for growth and discounting)', '', null, function (t) { return t; }, 0],
+    ['sec', 'Development and loan'],
+    ['dd', 'Share of construction spending this year', 'share', null, function (t) { return t < C ? r.dd[t] : 0; }, 9],
+    ['spend', 'Development spending', 'Rp juta', function (t) { return 'IF(' + ref('ti', t) + '=0,inp_land,0)+(inp_construction+calc_cont+inp_softCosts)*' + ref('dd', t) + '+IF(' + ref('ti', t) + '=inp_constructionYears-1,inp_ffe+inp_preOpening,0)'; }, function (t) { return r.spend[t]; }],
+    ['draw', 'Loan drawn', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,' + ref('spend', t) + '*calc_share,0)'; }, function (t) { return r.draw[t]; }],
+    ['open', 'Loan balance at start of year', 'Rp juta', function (t) { return t === 0 ? '0' : ref('close', t - 1); }, function (t) { return r.open[t]; }],
+    ['int', 'Interest', 'Rp juta', function (t) { return ref('open', t) + '*inp_interestRate'; }, function (t) { return r.interest[t]; }],
+    ['cap', 'Interest added to the loan (construction)', 'Rp juta', function (t) { return 'IF(AND(' + ref('op', t) + '=0,inp_idcMode=' + q(optText('idcMode', 'capitalise')) + '),' + ref('int', t) + ',0)'; }, function (t) { return r.capInt[t]; }],
+    ['paid', 'Interest paid in cash during construction', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,' + ref('int', t) + '-' + ref('cap', t) + ',0)'; }, function (t) { return r.paidConstrInt[t]; }],
+    ['prin', 'Scheduled principal repaid (from the calculator\u2019s schedule)', 'Rp juta', null, function (t) { return r.principal[t]; }, 8],
+    ['exitrep', 'Loan repaid from the sale', 'Rp juta', function (t) { return 'IF(AND(' + ref('op', t) + '=inp_holdYears,inp_exitMode<>' + q(optText('exitMode', 'hold')) + '),' + ref('open', t) + '+' + ref('draw', t) + '+' + ref('cap', t) + '-' + ref('prin', t) + ',0)'; }, function (t) { return r.exitRepay[t]; }],
+    ['close', 'Loan balance at end of year', 'Rp juta', function (t) { return ref('open', t) + '+' + ref('draw', t) + '+' + ref('cap', t) + '-' + ref('prin', t) + '-' + ref('exitrep', t); }, function (t) { return r.close[t]; }],
+    ['sec', 'Revenue'],
+    ['occ', 'Occupancy', 'share', function (t) { var o = ref('op', t); return 'IF(' + o + '=0,0,IF(' + o + '=1,inp_occ1,IF(' + o + '=2,inp_occ2,inp_occStab)))'; }, opS('occ'), 3],
+    ['adr', 'Average daily rate', 'Rp', function (t) { return 'IF(' + ref('op', t) + '=0,0,inp_adr*(1+inp_adrGrowth)^(' + ref('op', t) + '-1))'; }, opS('adr')],
+    ['nights', 'Room nights sold', 'nights', function (t) { return 'inp_rooms*inp_daysOpen*' + ref('occ', t); }, opS('nights')],
+    ['ru', 'Rooms revenue (calculated)', 'Rp juta', function (t) { return ref('nights', t) + '*' + ref('adr', t) + '/1000000'; }, function (t) { return unscaled(t)[0]; }],
+    ['fu', 'Food and drink income (calculated)', 'Rp juta', function (t) { return 'IF(inp_fnbMode=' + q(optText('fnbMode', 'perRoom')) + ',' + ref('nights', t) + '*inp_fnbPerRoom*(1+inp_adrGrowth)^(MAX(' + ref('op', t) + ',1)-1)/1000000,' + ref('ru', t) + '*inp_fnbPct)'; }, function (t) { return unscaled(t)[1]; }],
+    ['ou', 'Other income (calculated)', 'Rp juta', function (t) { return ref('ru', t) + '*inp_otherPct'; }, function (t) { return unscaled(t)[2]; }],
+    ['ov', 'Your own total revenue for the year (blank = use calculated)', 'Rp juta', null, function (t) { var x = opRow(t); return x && I.revOverride && I.revOverride[x.y] !== undefined && I.revOverride[x.y] !== '' ? Number(I.revOverride[x.y]) : ''; }, 8],
+    ['sc', 'Scaling to your own revenue', 'factor', function (t) { var s3 = 'SUM(' + ref('ru', t) + ',' + ref('fu', t) + ',' + ref('ou', t) + ')'; return 'IF(OR(' + ref('op', t) + '=0,' + ref('ov', t) + '=""),1,IF(' + s3 + '>0,' + ref('ov', t) + '/' + s3 + ',0))'; }, function (t) { var x = opRow(t), u = unscaled(t), su = u[0] + u[1] + u[2]; return x && x.overridden ? (su > 0 ? x.rev / su : 0) : 1; }, 4],
+    ['rr', 'Rooms revenue', 'Rp juta', function (t) { return ref('ru', t) + '*' + ref('sc', t); }, opS('roomsRev')],
+    ['fr', 'Food and drink income', 'Rp juta', function (t) { return ref('fu', t) + '*' + ref('sc', t); }, opS('fnbRev')],
+    ['or', 'Other income', 'Rp juta', function (t) { var s3 = 'SUM(' + ref('ru', t) + ',' + ref('fu', t) + ',' + ref('ou', t) + ')'; return 'IF(AND(' + ref('ov', t) + '<>"",' + s3 + '=0),' + ref('ov', t) + ',' + ref('ou', t) + '*' + ref('sc', t) + ')'; }, opS('otherRev')],
+    ['rev', 'Total revenue', 'Rp juta', function (t) { return ref('rr', t) + '+' + ref('fr', t) + '+' + ref('or', t); }, opS('rev'), 6],
+    ['sec', 'Operating costs'],
+    ['dept', 'Departmental costs', 'Rp juta', function (t) { return ref('rr', t) + '*inp_roomsCostPct+' + ref('fr', t) + '*inp_fnbCostPct+' + ref('or', t) + '*inp_otherCostPct'; }, opS('dept')],
+    ['und', 'Undistributed costs (overheads)', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,0,inp_undFixed*(1+inp_costInflation)^(' + ref('op', t) + '-1)+' + ref('rev', t) + '*inp_undVarPct)'; }, opS('und')],
+    ['gop', 'Gross operating profit', 'Rp juta', function (t) { return ref('rev', t) + '-' + ref('dept', t) + '-' + ref('und', t); }, opS('gop'), 6],
+    ['bf', 'Base management fee', 'Rp juta', function (t) { return ref('rev', t) + '*inp_baseFeePct'; }, opS('baseFee')],
+    ['if', 'Incentive management fee', 'Rp juta', function (t) { return 'MAX(0,' + ref('gop', t) + '-' + ref('bf', t) + ')*inp_incentiveFeePct'; }, opS('incFee')],
+    ['brf', 'Brand, marketing and reservation fees', 'Rp juta', function (t) { return ref('rr', t) + '*inp_brandFeePct'; }, opS('brandFee')],
+    ['fix', 'Insurance and land and building tax', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,0,inp_fixedCharges*(1+inp_costInflation)^(' + ref('op', t) + '-1))'; }, opS('fixed')],
+    ['ebitda', 'Operating profit (EBITDA)', 'Rp juta', function (t) { return ref('gop', t) + '-' + ref('bf', t) + '-' + ref('if', t) + '-' + ref('brf', t) + '-' + ref('fix', t); }, opS('ebitda'), 6],
+    ['res', 'Replacement reserve for furniture, fixtures and equipment', 'Rp juta', function (t) { return ref('rev', t) + '*inp_reservePct'; }, opS('reserve')],
+    ['noi', 'Net operating income (after reserve)', 'Rp juta', function (t) { return ref('ebitda', t) + '-' + ref('res', t); }, opS('noi'), 6],
+    ['sec', 'Corporate income tax (simplified estimate)'],
+    ['depb', 'Depreciation: building, fees, contingency and capitalised interest (20 years)', 'Rp juta', function (t) { var o = ref('op', t); return 'IF(AND(' + o + '>=1,' + o + '<=20),(inp_construction+calc_cont+inp_softCosts+calc_idc)/20,0)'; }, function (t) { var x = opRow(t); return x && x.y <= 20 ? bldgBase / 20 : 0; }],
+    ['depf', 'Depreciation: furniture, fixtures and equipment (4 and 8 years)', 'Rp juta', function (t) { var o = ref('op', t); return 'IF(AND(' + o + '>=1,' + o + '<=4),inp_ffe*inp_ffeShortLifePct/4,0)+IF(AND(' + o + '>=1,' + o + '<=8),inp_ffe*(1-inp_ffeShortLifePct)/8,0)'; }, function (t) { var x = opRow(t); if (!x) return 0; return (x.y <= 4 ? ffe * sh / 4 : 0) + (x.y <= 8 ? ffe * (1 - sh) / 8 : 0); }],
+    ['depp', 'Amortisation: pre-opening costs (4 years)', 'Rp juta', function (t) { var o = ref('op', t); return 'IF(AND(' + o + '>=1,' + o + '<=4),inp_preOpening/4,0)'; }, function (t) { var x = opRow(t); return x && x.y <= 4 ? pre / 4 : 0; }],
+    ['depr', 'Depreciation: replacement furniture bought from the reserve (4 years)', 'Rp juta', function (t) { return t < C ? '0' : 'SUM(' + L(Math.max(C, t - 3)) + rowNo.res + ':' + L(t) + rowNo.res + ')/4'; }, opS('reserveDep')],
+    ['depd', 'Depreciation deducted', 'Rp juta', function (t) { return '(' + ref('depb', t) + '+' + ref('depf', t) + '+' + ref('depp', t) + '+' + ref('depr', t) + ')*calc_deddep'; }, opS('depDeducted')],
+    ['intd', 'Interest deducted (debt above 4 times equity is not deductible)', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,0,IF(' + ref('open', t) + '>0,' + ref('int', t) + '*IF(calc_eqinv>0,MIN(1,4*calc_eqinv/' + ref('open', t) + '),0),0))'; }, opS('interestDeducted')],
+    ['prd', 'Principal deducted (only if chosen; not standard)', 'Rp juta', function (t) { return 'IF(AND(' + ref('op', t) + '>0,inp_deductPrincipal="Yes"),' + ref('prin', t) + ',0)'; }, opS('principalDeducted')],
+    ['tb', 'Taxable profit before losses', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,0,' + ref('ebitda', t) + '-' + ref('intd', t) + '-' + ref('depd', t) + '-' + ref('prd', t) + ')'; }, opS('taxableBefore')],
+    ['lu', 'Tax losses used (5-year carry-forward, from the calculator)', 'Rp juta', null, opS('lossesUsed'), 8],
+    ['tx', 'Taxable profit', 'Rp juta', function (t) { return 'MAX(0,' + ref('tb', t) + '-' + ref('lu', t) + ')'; }, opS('taxable')],
+    ['tax', 'Corporate income tax', 'Rp juta', function (t) { return ref('tx', t) + '*inp_taxRate'; }, opS('tax'), 6],
+    ['taxu', 'Tax if there were no loan (for the project return, from the calculator)', 'Rp juta', null, opS('taxUnlev'), 8],
+    ['sec', 'Cash flow'],
+    ['cfads', 'Cash available for debt service', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,0,' + ref('noi', t) + '-' + ref('tax', t) + ')'; }, opS('cfads')],
+    ['ds', 'Debt service (interest + principal)', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,0,' + ref('int', t) + '+' + ref('prin', t) + ')'; }, opS('debtService')],
+    ['dscr', 'Debt service coverage', 'times', function (t) { return 'IF(' + ref('ds', t) + '>0,' + ref('cfads', t) + '/' + ref('ds', t) + ',"")'; }, function (t) { var x = opRow(t); return x && x.dscr !== null ? x.dscr : ''; }, 4],
+    ['sale', 'Sale price', 'Rp juta', function (t) { var ti = ref('ti', t); return 'IF(' + ref('op', t) + '=inp_holdYears,IF(inp_exitMode=' + q(optText('exitMode', 'cap')) + ',IF(inp_exitYield>0,MAX(0,' + ref('noi', t) + ')/inp_exitYield,0),IF(inp_exitMode=' + q(optText('exitMode', 'growth')) + ',inp_land*(1+inp_landGrowth)^' + ti + '+(calc_dev-inp_land)*(1+inp_buildingGrowth)^' + ti + ',0)),0)'; }, function (t) { return t === exitT ? R.salePrice : 0; }],
+    ['scost', 'Selling costs and final tax on the sale', 'Rp juta', function (t) { return ref('sale', t) + '*(inp_sellingCostPct+inp_saleTaxPct)'; }, function (t) { return t === exitT ? R.sellingCosts + R.saleTax : 0; }],
+    ['nsale', 'Net sale proceeds', 'Rp juta', function (t) { return ref('sale', t) + '-' + ref('scost', t); }, function (t) { return t === exitT ? R.netSale : 0; }],
+    ['eqin', 'Your equity put in during construction', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,' + ref('spend', t) + '-' + ref('draw', t) + '+' + ref('paid', t) + ',0)'; }, function (t) { return r.equityIn[t]; }],
+    ['pcf', 'Project cash flow (before financing, after tax)', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,-' + ref('spend', t) + ',' + ref('noi', t) + '-' + ref('taxu', t) + '+' + ref('nsale', t) + ')'; }, function (t) { return r.projectCF[t]; }, 6],
+    ['eopcf', 'Your cash flow before any sale', 'Rp juta', function (t) { return 'IF(' + ref('op', t) + '=0,-' + ref('eqin', t) + ',' + ref('cfads', t) + '-' + ref('int', t) + '-' + ref('prin', t) + ')'; }, function (t) { return r.equityOpCF[t]; }],
+    ['ecf', 'Your cash flow (equity)', 'Rp juta', function (t) { return ref('eopcf', t) + '+IF(' + ref('op', t) + '=0,0,' + ref('nsale', t) + '-' + ref('exitrep', t) + ')'; }, function (t) { return r.equityCF[t]; }, 6],
+    ['cum', 'Your cumulative cash', 'Rp juta', function (t) { return t === 0 ? ref('ecf', t) : ref('cum', t - 1) + '+' + ref('ecf', t); }, function (t) { return r.cumEquity[t]; }],
+    ['coc', 'Cash-on-cash yield', 'share', function (t) { return 'IF(OR(' + ref('op', t) + '=0,calc_eqinv<=0),"",' + ref('eopcf', t) + '/calc_eqinv)'; }, function (t) { var x = opRow(t); return x && x.coc !== null ? x.coc : ''; }, 3]
+  ];
+  A.push([{ v: 'Hotel return on investment \u2014 annual cash flow', s: 10 }]);
+  A.push([{ v: 'Rp juta (millions of rupiah) unless stated. Black figures are formulas; blue figures are copied from the calculator (principal schedule, tax losses used, tax if there were no loan, your own yearly revenue).', s: 11 }]);
+  A.push(null);
+  var rn = A.length;
+  defs.forEach(function (d) { rn++; if (d[0] !== 'sec') rowNo[d[0]] = rn; else A.push(null); if (d[0] === 'sec') rowNo['_sec' + rn] = rn; });
+  // rebuild properly: we pushed a null for sections already; now fill rows in order
+  A.length = 3;
+  defs.forEach(function (d) {
+    if (d[0] === 'sec') { A.push([{ v: d[1], s: 5 }].concat(new Array(T + 1).fill(null).map(function () { return { v: '', s: 5 }; }).slice(0, 0))); return; }
+    var row = [d[1], d[2]], fmt = d[5] !== undefined ? d[5] : 2;
+    for (var t = 0; t < T; t++) {
+      var val = d[4](t), cell;
+      if (d[3]) cell = { f: d[3](t), v: (typeof val === 'number' && isFinite(val)) ? val : (val === '' ? '' : val), s: fmt === 8 ? 2 : fmt };
+      else if (val === '' || val === null) cell = null;
+      else cell = { v: val, s: fmt };
+      if (cell && cell.f && cell.v === '') cell.v = '';
+      row.push(cell);
+    }
+    A.push(row);
+  });
+  // Fix up formula cells whose cached value is an empty string (string result)
+  A.forEach(function (row) { if (!row) return; row.forEach(function (c) { if (c && c.f && c.v === '') c.v = ''; }); });
+  // Inputs-sheet formulas that reference the annual sheet
+  var idcCell = inRows[derivedRow.calc_idc - 1][1]; idcCell.f = 'SUMIF(' + AN + '!' + rng('op', 0, T - 1) + ',0,' + AN + '!' + rng('int', 0, T - 1) + ')';
+  var eqCell = inRows[derivedRow.calc_eqinv - 1][1]; eqCell.f = 'SUM(' + AN + '!' + rng('eqin', 0, T - 1) + ')';
+
+  // ---------- Results sheet
+  var full = function (k) { return AN + '!' + rng(k, 0, T - 1); };
+  var resRows = [[{ v: 'Hotel return on investment \u2014 results summary', s: 10 }], ['Project: ' + project.name + '   \u00b7   Scenario: ' + s.name], [{ v: 'The \u201cFormula\u201d column recalculates from the other sheets; \u201cCalculator\u201d is the value the app showed, for checking.', s: 11 }], null,
+    [{ v: 'Result', s: 5 }, { v: 'Formula', s: 5 }, { v: 'Calculator', s: 5 }, { v: 'Notes', s: 5 }]];
+  function rr(label, f, v, st, note) { resRows.push([label, f ? { f: f, v: v === null ? '' : v, s: st } : { v: v === null ? 'n/a' : v, s: st }, { v: v === null ? 'n/a' : v, s: st }, note || '']); }
+  var opFrom = C, opTo = T - 1, dscrR = AN + '!' + rng('dscr', opFrom, opTo);
+  rr('Total development cost', 'calc_dev', R.devCost, 2);
+  rr('Interest during construction', 'calc_idc', R.idcTotal, 2);
+  rr('Loan balance at opening', AN + '!' + ref('close', C - 1), R.loanAtOpening, 2);
+  rr('Equity invested during construction', 'calc_eqinv', R.equityInvested, 2);
+  rr('Your equity needed (peak, including early shortfalls)', null, R.peakEquity, 2, 'From the calculator');
+  rr('Project internal rate of return (before financing, after tax)', 'IRR(' + full('pcf') + ')', R.projectIRR, 3);
+  rr('Equity internal rate of return (your money, after tax)', 'IRR(' + full('ecf') + ')', R.equityIRR, 3);
+  rr('Net present value of the project', AN + '!' + ref('pcf', 0) + '+NPV(inp_discountRate,' + AN + '!' + rng('pcf', 1, T - 1) + ')', R.npvProject, 2, 'Year 0 = first construction year, not discounted');
+  rr('Net present value of your equity', AN + '!' + ref('ecf', 0) + '+NPV(inp_discountRate,' + AN + '!' + rng('ecf', 1, T - 1) + ')', R.npvEquity, 2);
+  rr('Payback after opening (years, operating cash only)', null, R.paybackSimple, 13, 'From the calculator; n/a = not reached');
+  rr('Discounted payback after opening (years)', null, R.paybackDiscounted, 13, 'From the calculator');
+  rr('Equity multiple', 'SUMIF(' + full('ecf') + ',">0")/-SUMIF(' + full('ecf') + ',"<0")', R.equityMultiple, 7);
+  if (H >= 3) rr('Cash-on-cash yield, year 3', AN + '!' + ref('coc', C + 2), R.cocStabilised, 3);
+  rr('Average cash-on-cash yield', 'AVERAGE(' + AN + '!' + rng('coc', opFrom, opTo) + ')', R.cocAvg, 3);
+  rr('Lowest debt service coverage', 'IF(COUNT(' + dscrR + ')=0,"",MIN(' + dscrR + '))', R.dscrMin, 4, 'Banks usually want 1,30 or more');
+  rr('Average debt service coverage', 'IF(COUNT(' + dscrR + ')=0,"",AVERAGE(' + dscrR + '))', R.dscrAvg, 4);
+  rr('Sale price', AN + '!' + ref('sale', T - 1), R.salePrice, 2);
+  rr('Net to you from the sale (after costs, tax and loan)', AN + '!' + ref('nsale', T - 1) + '-' + AN + '!' + ref('exitrep', T - 1), R.netToEquityAtExit, 2);
+  rr('Total corporate income tax', 'SUM(' + full('tax') + ')', R.totalTax, 2);
+  resRows.push(null); resRows.push([{ v: 'Tax treatment: ' + (I.deductPrincipal ? 'loan principal IS deducted' + (I.deductDepreciation === true ? ' as well as depreciation' : ' instead of depreciation') + ' (not the standard Indonesian treatment; confirm with a tax adviser).' : 'standard \u2014 interest (within the 4 to 1 debt-to-equity limit) and depreciation deducted, loan principal not deducted; the replacement reserve is capitalised and depreciated over 4 years.'), s: 11 }]);
+
+  // ---------- Scenario comparison (values)
+  var cmp = [[{ v: 'Scenario comparison', s: 10 }], [{ v: 'Values as calculated by the app for every scenario in the project (money in Rp juta).', s: 11 }], null];
+  var S = project.scenarios, RS = S.map(function (x) { return HotelModel.run(x.inputs); });
+  cmp.push([{ v: 'Result', s: 5 }].concat(S.map(function (x) { return { v: x.name, s: 5 }; })));
+  [['Total development cost', 'devCost', 2], ['Loan at opening', 'loanAtOpening', 2], ['Your equity needed (peak)', 'peakEquity', 2], ['Revenue, year 3', 'stabilisedRevenue', 2], ['Operating profit (EBITDA), year 3', 'stabilisedEbitda', 2], ['Yield on cost', 'yieldOnCost', 3],
+    ['Equity internal rate of return', 'equityIRR', 3], ['Project internal rate of return', 'projectIRR', 3], ['Net present value of your equity', 'npvEquity', 2], ['Payback after opening (years)', 'paybackSimple', 13], ['Discounted payback (years)', 'paybackDiscounted', 13],
+    ['Equity multiple', 'equityMultiple', 7], ['Cash-on-cash yield, year 3', 'cocStabilised', 3], ['Lowest debt service coverage', 'dscrMin', 4], ['Sale price', 'salePrice', 2]].forEach(function (m) {
+    cmp.push([m[0]].concat(RS.map(function (x) { var v = x.res[m[1]]; return v === null ? 'n/a' : { v: v, s: m[2] }; })));
+  });
+  cmp.push(['Inputs still marked as examples'].concat(S.map(function (x) { return { v: Object.keys(x.src).filter(function (k) { return x.src[k]; }).length, s: 2 }; })));
+  cmp.push(['Principal deducted before tax'].concat(S.map(function (x) { return x.inputs.deductPrincipal ? 'Yes (not standard)' : 'No (standard)'; })));
+
+  var annCols = [58, 12]; for (var t = 0; t < T; t++) annCols.push(14);
+  return MiniXlsx.build([
+    { name: 'Inputs', rows: inRows, cols: [58, 16, 26, 26, 24], freeze: [0, 6] },
+    { name: 'Annual cash flow', rows: A, cols: annCols, freeze: [2, rowNo.period] },
+    { name: 'Results summary', rows: resRows, cols: [60, 16, 16, 44] },
+    { name: 'Scenario comparison', rows: cmp, cols: [40].concat(S.map(function () { return 24; })) }
+  ], names);
+}
+function exportExcel() {
+  try {
+    var bytes = buildWorkbook(project, scen());
+    download('Hotel-ROI-' + safeName(project.name) + '-' + safeName(scen().name) + '-' + stamp() + '.xlsx', new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  } catch (e) { message('Export failed', esc(e.message)); throw e; }
+}
+
+(function () {
+  loadLib();
+  advanced = !!lib.advanced;
+  var p = lib.lastOpen && lib.projects[lib.lastOpen];
+  project = p ? normaliseProject(p) : starterProject();
+  if (!p) persist(false);
+  document.addEventListener('input', onInput);
+  document.addEventListener('change', onChange);
+  document.addEventListener('focusout', onBlur);
+  document.addEventListener('click', onClick);
+  renderAll();
+})();
+</script>
+<script>
+(function(){function setH(){var t=document.getElementById('top');document.documentElement.style.setProperty('--toph',(t.offsetHeight+8)+'px');}window.addEventListener('resize',setH);setTimeout(setH,0);})();
+</script>
+<script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js');</script>
+</body>
+</html>
